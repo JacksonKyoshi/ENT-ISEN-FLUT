@@ -12,6 +12,81 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
+class HamburgerMenu extends StatelessWidget {
+  const HamburgerMenu({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        children: [
+          DrawerHeader(
+            decoration: const BoxDecoration(
+              color: Colors.red,
+            ),
+            child: Column(
+              children: [
+                const Text(
+                  'ISEN Toulon',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                  ),
+                ),
+                Container(
+                  child: Image.asset('lib/assets/ISEN-YNCREA-Mediterranee-White.png', fit: BoxFit.cover),
+                ),
+              ],
+            ),
+          ),
+          ListTile(
+            title: const Text('Accueil'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Actualités'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Agenda'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Annuaire'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Moodle'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Intranet'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+          ListTile(
+            title: const Text('Contact'),
+            onTap: () {
+              Navigator.pop(context);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
 
@@ -28,7 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('ENT ISEN MOODLE'),
+
       ),
+      drawer: const HamburgerMenu(),
       body: Center(
         child: FutureBuilder<List<Notation>>(
           future: _notationsFuture,
