@@ -1,8 +1,8 @@
 // screens/home_screen.dart
 import 'package:flutter/material.dart';
 
-import '../main.dart';
 import '../model/notation.dart';
+import '../notesscreen/note_screen.dart';
 import '../services/api_service.dart';
 import '../widgets/hamburger_menu.dart';
 
@@ -28,33 +28,57 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ENT ISEN MOODLE'),
-
+        //white text color
+        foregroundColor: Colors.white,
+        title: const Text('ENT ISEN Toulon'),
+        backgroundColor: Colors.red,
       ),
       drawer: const HamburgerMenu(),
       body: Center(
-        child: FutureBuilder<List<Notation>>(
-          future: _notationsFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  Notation notation = snapshot.data![index];
-                  return ListTile(
-                    title: Text('Date: ${notation.date}'),
-                    subtitle: Text('Code: ${notation.code}\nNote: ${notation.note}'),
-                    trailing: Icon(Icons.arrow_forward),
-                    // Add more details if needed
+        child: Container(
+          child: Column(
+            children: [
+              Align(
+                alignment: Alignment.topLeft,
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  child: const Text('Latest notes :', style: TextStyle(fontSize: 20)),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => NotesScreen()),
                   );
                 },
-              );
-            }
-          },
+                child: FutureBuilder<List<Notation>>(
+                  future: _notationsFuture,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return Container(
+                        width: MediaQuery.of(context).size.width -30,
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          color: Colors.blue.shade100,
+                        ),
+                        child: Column(
+                          children: [
+                            Text(snapshot.data![0].code),
+                            Text(snapshot.data![0].note.toString(), style: const TextStyle(fontSize: 30)),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+                      return const CircularProgressIndicator();
+                    },
+                  ),
+                )
+            ],
+          ),
         ),
       ),
     );

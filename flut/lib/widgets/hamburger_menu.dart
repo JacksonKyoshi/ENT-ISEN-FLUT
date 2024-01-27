@@ -1,6 +1,10 @@
+import 'package:ent/homescreen/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+import '../notesscreen/note_screen.dart';
 
 class HamburgerMenu extends StatelessWidget {
   const HamburgerMenu({super.key});
@@ -42,7 +46,10 @@ class HamburgerMenu extends StatelessWidget {
             ),
             title: const Text('Accueil'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => HomeScreen()),
+              );
             },
           ),
           ListTile(
@@ -54,7 +61,10 @@ class HamburgerMenu extends StatelessWidget {
             ),
             title: const Text('Notes'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NotesScreen()),
+              );
             },
           ),
           ListTile(
@@ -90,6 +100,7 @@ class HamburgerMenu extends StatelessWidget {
             ),
             title: const Text('EDUC'),
             onTap: () {
+              launch('https://educ.isen-mediterranee.fr/fr/');
               Navigator.pop(context);
             },
           ),
@@ -102,6 +113,7 @@ class HamburgerMenu extends StatelessWidget {
             ),
             title: const Text('Site web'),
             onTap: () {
+              launch('https://www.isen-mediterranee.fr/');
               Navigator.pop(context);
             },
           ),
