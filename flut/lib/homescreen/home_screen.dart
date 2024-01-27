@@ -1,6 +1,7 @@
 // screens/home_screen.dart
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../model/notation.dart';
 import '../notesscreen/note_screen.dart';
 import '../services/api_service.dart';
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    //MyApp().testIcsParser();
     return Scaffold(
       appBar: AppBar(
         //white text color

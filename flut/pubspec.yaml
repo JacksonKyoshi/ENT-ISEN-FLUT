@@ -31,7 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_svg: ^0.22.0
-  url_launcher: ^6.0.12  # add this line
+  url_launcher: ^6.0.12
+  icalendar_parser: ^2.0.0
 
   http: ^0.13.3
 
