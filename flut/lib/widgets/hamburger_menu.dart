@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../calendar_screen/calendar_screen.dart';
 import '../notesscreen/absence_screen.dart';
 import '../notesscreen/note_screen.dart';
 
@@ -77,7 +78,10 @@ class HamburgerMenu extends StatelessWidget {
             ),
             title: const Text('Emploi du temps'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CalendarScreen()),
+              );
             },
           ),
           ListTile(

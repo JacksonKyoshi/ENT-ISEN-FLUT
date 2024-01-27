@@ -1,25 +1,33 @@
+// screens/home_screen.dart
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
+import '../main.dart';
 import '../model/notation.dart';
+import '../notesscreen/note_screen.dart';
 import '../services/api_service.dart';
+import '../services/ics_parser.dart';
 import '../widgets/hamburger_menu.dart';
 
-class NotesScreen extends StatefulWidget {
-  const NotesScreen({Key? key}) : super(key: key);
+class CalendarScreen extends StatefulWidget {
+  const CalendarScreen({Key? key}) : super(key: key);
 
   @override
-  _NotesScreenState createState() => _NotesScreenState();
+  _CalendarScreenState createState() => _CalendarScreenState();
 }
 
-class _NotesScreenState extends State<NotesScreen> {
+class _CalendarScreenState extends State<CalendarScreen> {
   final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
+  late MyApp myAppInstance;
 
-  late Future<List<Notation>> _notationsFuture;
+  Future<String>? json_calendar;
 
   @override
   void initState() {
     super.initState();
-    _notationsFuture = apiService.fetchNotations('FAKETOKEN') as Future<List<Notation>>;
+    myAppInstance = MyApp();
+    json_calendar = myAppInstance.testIcsParser();
   }
 
   @override
@@ -33,21 +41,20 @@ class _NotesScreenState extends State<NotesScreen> {
       ),
       drawer: const HamburgerMenu(),
       body: Center(
-        child: FutureBuilder<List<Notation>>(
-          future: _notationsFuture,
-          builder: (context, snapshot) {
+        child: FutureBuilder<String>(
+          future: json_calendar,
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return CircularProgressIndicator();
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
               return ListView.builder(
-                itemCount: snapshot.data!.length,
+                itemCount: 1,
                 itemBuilder: (context, index) {
-                  Notation notation = snapshot.data![index];
                   return ListTile(
-                    title: Text('Date: ${notation.date}'),
-                    subtitle: Text('Code: ${notation.code}\nNote: ${notation.note}'),
+                    title: Text('Date: ${snapshot.data}'),
+                    subtitle: Text('Code: ${snapshot.data}'),0
                     // Add more details if needed
                   );
                 },

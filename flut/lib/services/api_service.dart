@@ -28,4 +28,7 @@ class ApiService {
       throw Exception('Failed to load notations');
     }
   }
+
+  // Add absence fetching
+
 }

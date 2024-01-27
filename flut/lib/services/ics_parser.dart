@@ -23,6 +23,19 @@ class CalendarEvent {
       this.url,
       this.attendees,
       this.organizer);
+
+  static fromJson(json) {
+    return CalendarEvent(
+        json['summary'],
+        json['description'],
+        json['start'],
+        json['end'],
+        json['location'],
+        json['url'],
+        json['attendees'],
+        json['organizer']);
+  }
+
 }
 
 class ics_parser {
