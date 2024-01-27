@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../notesscreen/absence_screen.dart';
 import '../notesscreen/note_screen.dart';
 
 class HamburgerMenu extends StatelessWidget {
@@ -88,7 +89,10 @@ class HamburgerMenu extends StatelessWidget {
             ),
             title: const Text('Absences'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AbsenceView()),
+              );
             },
           ),
           ListTile(
