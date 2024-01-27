@@ -1,6 +1,6 @@
 {
-    "name": "flut",
-    "short_name": "flut",
+    "name": "ent",
+    "short_name": "ent",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
