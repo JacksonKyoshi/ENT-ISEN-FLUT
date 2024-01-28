@@ -54,7 +54,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 itemBuilder: (context, index) {
                   return ListTile(
                     title: Text('Date: ${snapshot.data}'),
-                    subtitle: Text('Code: ${snapshot.data}'),0
+                    subtitle: Text('Code: ${snapshot.data}')
                     // Add more details if needed
                   );
                 },
