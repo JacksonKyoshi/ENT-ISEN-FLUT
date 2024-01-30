@@ -3,14 +3,15 @@ class Notation {
   final String date;
   final String code;
   final String note;
-  final String comments;
+  final String name;
   final List<String> teachers;
+
 
   Notation({
     required this.date,
     required this.code,
     required this.note,
-    required this.comments,
+    required this.name,
     required this.teachers,
   });
 
@@ -18,8 +19,8 @@ class Notation {
     return Notation(
       date: json['date'],
       code: json['code'],
+      name: json['name'],
       note: json['note'],
-      comments: json['comments'],
       teachers: List<String>.from(json['teachers']),
     );
   }

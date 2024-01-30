@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/absences.dart';
 import '../services/api_service.dart';
+import '../services/token_service.dart';
 import '../widgets/hamburger_menu.dart';
 
 
@@ -21,7 +22,9 @@ class _AbsenceViewState extends State<AbsenceView> {
   @override
   void initState() {
     super.initState();
-    _absenceFuture = apiService.fetchAbsence('11C9F61D8589AFCCCAADC47F2E67EA8E');
+    String token=TokenManager.getInstance().getToken();
+    _notationsFuture = apiService.fetchNotations(token) as Future<List<Absence>>;
+
   }
 
   @override

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/notation.dart';
 import '../services/api_service.dart';
+import '../services/token_service.dart';
 import '../widgets/hamburger_menu.dart';
 
 class NotesScreen extends StatefulWidget {
@@ -10,7 +11,6 @@ class NotesScreen extends StatefulWidget {
   @override
   _NotesScreenState createState() => _NotesScreenState();
 }
-
 class _NotesScreenState extends State<NotesScreen> {
   final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
 
@@ -19,14 +19,16 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   void initState() {
     super.initState();
-    _notationsFuture = apiService.fetchNotations('FAKETOKEN') as Future<List<Notation>>;
+    String token = TokenManager.getInstance().getToken();
+    _notationsFuture = apiService.fetchNotations(token) as Future<List<Notation>>;
+
+    print('token : fils de pute de merde pourquoi tu marches aps enculé $token');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //white text color
         foregroundColor: Colors.white,
         title: const Text('ENT ISEN Toulon'),
         backgroundColor: Colors.red,
@@ -48,7 +50,6 @@ class _NotesScreenState extends State<NotesScreen> {
                   return ListTile(
                     title: Text('Date: ${notation.date}'),
                     subtitle: Text('Code: ${notation.code}\nNote: ${notation.note}'),
-                    // Add more details if needed
                   );
                 },
               );
