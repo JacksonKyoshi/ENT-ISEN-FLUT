@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+import '../services/token_service.dart';
+
 
 void main() => runApp(LoginApp());
 
@@ -27,6 +29,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,9 +77,7 @@ class _LoginPageState extends State<LoginPage> {
                   );
                   // Vérification du code de statut de la réponse
                   if (response.statusCode == 200) {
-                    final String token = response.body;
-                    print("token : $token");
-
+                    TokenManager.getInstance().setToken(response.body);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => MyApp()),
