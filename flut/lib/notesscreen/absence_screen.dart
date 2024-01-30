@@ -23,8 +23,7 @@ class _AbsenceViewState extends State<AbsenceView> {
   void initState() {
     super.initState();
     String token=TokenManager.getInstance().getToken();
-    _absenceFuture = apiService.fetchNotations(token) as Future<List<Absence>>;
-
+    _absenceFuture = apiService.fetchAbsence(token);
   }
 
   @override
