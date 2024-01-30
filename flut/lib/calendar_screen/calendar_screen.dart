@@ -1,17 +1,12 @@
-// screens/home_screen.dart
-import 'dart:convert';
-
-import 'package:ent/services/ics_parser.dart';
 import 'package:flutter/material.dart';
-
-import '../main.dart';
+import 'package:provider/provider.dart';
+import '../services/calendar_service.dart';
 import '../services/User_service.dart';
-import '../services/api_service.dart';
 import '../widgets/day_view.dart';
 import '../widgets/event_detail.dart';
 import '../widgets/hamburger_menu.dart';
-import '../widgets/month_view.dart';
 import '../widgets/week_view.dart';
+import '../services/ics_parser.dart'; // Add this line
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
@@ -21,19 +16,20 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
   DateTime selectedDay = DateTime.now();
-  CalendarEvent? selectedEvent;
-
-  Future<List<CalendarEvent>>? calendarEvents;
-  Future<String>? json_calendar;
+  CalendarEvent? selectedEvent; // Now CalendarEvent should be recognized
 
   @override
   void initState() {
     super.initState();
     selectedDay = DateTime.now(); // Set selectedDay to the current day
-    IcsParser icsParser = IcsParser();
-    calendarEvents = IcsParser.parse(UserManager.getInstance().getUsername().toLowerCase());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<CalendarEventProvider>(context, listen: false)
+        .fetchEvents('pierre.geiguer');
   }
 
   void onToday() {
@@ -49,16 +45,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2030),
     );
-    if (picked != null && picked != selectedDay)
+    if (picked != null && picked != selectedDay) {
       setState(() {
         selectedDay = picked;
       });
+    }
   }
 
   bool isWithinSelectedWeek(DateTime date) {
     final startOfWeek = DateTime(selectedDay.year, selectedDay.month,
         selectedDay.day - selectedDay.weekday + 1);
-    final endOfWeek = startOfWeek.add(Duration(days: 7));
+    final endOfWeek = startOfWeek.add(const Duration(days: 7));
 
     return date.isAfter(startOfWeek) && date.isBefore(endOfWeek);
   }
@@ -68,7 +65,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       selectedDay = DateTime(2015, 8);
     } else if (selectedDay.isAfter(DateTime(2030))) {
       selectedDay = DateTime(2030);
-    }else {
+    } else {
       setState(() {
         selectedDay = selectedDay.subtract(const Duration(days: 1));
       });
@@ -81,7 +78,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       selectedDay = DateTime(2015, 8);
     } else if (selectedDay.isAfter(DateTime(2030))) {
       selectedDay = DateTime(2030);
-    }else {
+    } else {
       setState(() {
         selectedDay = selectedDay.add(const Duration(days: 1));
       });
@@ -116,32 +113,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
         backgroundColor: Colors.red,
       ),
       drawer: const HamburgerMenu(),
-      body: FutureBuilder<List<CalendarEvent>>(
-        future: calendarEvents,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<CalendarEvent>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (snapshot.hasData && snapshot.data != null) {
-            List<CalendarEvent> events = snapshot.data!;
+      body: Consumer<CalendarEventProvider>(
+        builder: (context, calendarEventProvider, child) {
+          List<CalendarEvent>? events = calendarEventProvider.events;
+          if (events == null) {
+            return const CircularProgressIndicator();
+          } else {
             events = events
                 .where((event) => isWithinSelectedWeek(event.start!))
                 .toList();
             events.sort((a, b) => a.start!.compareTo(b.start!));
 
-            List<CalendarEvent> selectedDayEvents = events
-                .where((event) => event.start!.day == selectedDay.day)
-                .toList();
 
             return Column(
               children: <Widget>[
+                const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: onPreviousWeek,
                     ),
                     Expanded(
@@ -151,7 +142,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.arrow_forward),
+                      icon: const Icon(Icons.arrow_forward),
                       onPressed: onNextWeek,
                     ),
                   ],
@@ -162,7 +153,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ElevatedButton(
                       onPressed: onToday,
                       //button + text + icon
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.today),
                           Text(
@@ -174,7 +165,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ElevatedButton(
                       onPressed: onSelectDay,
                       //button + text + icon
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.calendar_month),
                           Text(
@@ -186,7 +177,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ],
                 ),
                 Expanded(
-                  flex: 2, // Increase this value to give more space to the day view
+                  flex:
+                      2, // Increase this value to give more space to the day view
                   child: DayView(
                     date: selectedDay,
                     onEventSelected: onEventSelected,
@@ -197,15 +189,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
                 if (selectedEvent != null)
                   Container(
-                    constraints: BoxConstraints(
-                        maxHeight: 300
-                    ), // Set a maximum height
+                    constraints:
+                        const BoxConstraints(maxHeight: 300), // Set a maximum height
                     child: EventDetailView(event: selectedEvent!),
                   ),
               ],
             );
-          } else {
-            return CircularProgressIndicator();
           }
         },
       ),

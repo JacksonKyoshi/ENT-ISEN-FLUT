@@ -51,7 +51,6 @@ class DayView extends StatelessWidget {
               '${event.summary}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            tileColor: Colors.grey[200],
             onTap: () => onEventSelected(event),
           ));
         },

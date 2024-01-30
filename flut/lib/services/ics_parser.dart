@@ -67,7 +67,7 @@ class CalendarEvent {
 class IcsParser {
   static Future<List<CalendarEvent>> parse(String login) async {
     final String url = 'https://ent-toulon.isen.fr/webaurion/ICS/$login.ics';
-    final response = await http.get(Uri.parse(url));
+    final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
     final String decodedString = utf8.decode(response.bodyBytes);
     return fromIcs(decodedString);
   }
@@ -75,6 +75,8 @@ class IcsParser {
   static List<CalendarEvent> fromIcs(String icsString) {
     var icalendar = ICalendar.fromString(icsString);
     var events = icalendar.data as List;
-    return events.map((event) => CalendarEvent.fromJson(event)).toList();
+    List<CalendarEvent> calendarEvents = events.map((event) => CalendarEvent.fromJson(event)).toList();
+    calendarEvents.sort((a, b) => a.start!.compareTo(b.start!));
+    return calendarEvents;
   }
 }

@@ -47,7 +47,7 @@ class WeekView extends StatelessWidget {
             width: 120, // Adjust this value as needed
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: isSelected ? Colors.grey : null,
+              color: isSelected ? Colors.red.shade50 : null,
             ),
             child: ListTile(
               title: Text(

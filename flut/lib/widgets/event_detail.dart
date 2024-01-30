@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../services/ics_parser.dart';
 
@@ -14,7 +15,7 @@ class EventDetailView extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10.0),
-          color: Colors.grey[200],
+          color: Colors.red[50],
         ),
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -23,27 +24,28 @@ class EventDetailView extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Divider(color: Colors.grey), // This adds a delimiter on top
+                const Divider(color: Colors.grey), // This adds a delimiter on top
                 Text(
                   event.summary ?? '',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Text(
-                  'Start: ${event.start}',
-                  style: Theme.of(context).textTheme.subtitle1,
+                  'Cours du: ${DateFormat('dd MMM y').format(event.start!)}',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  'End: ${event.end}',
-                  style: Theme.of(context).textTheme.subtitle1,
+                  'De: ${DateFormat('HH:mm').format(event.start!)} à ${DateFormat('HH:mm').format(event.end!)}',
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 Text(
                   event.description.entries
                       .map((e) => '${e.key}: ${e.value}')
                       .join('\n'),
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
+                const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
               ],
             ),
           ),
