@@ -14,7 +14,7 @@ class LoginApp extends StatelessWidget {
     return MaterialApp(
       title: 'Login Page',
       theme: ThemeData(
-        primarySwatch: Colors.red,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: LoginPage(),
@@ -95,14 +95,12 @@ class _LoginPageState extends State<LoginPage> {
                   print('Erreur lors de la requête: $e');
                 }
               },
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red,
-              ),
+
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
                 child: Text(
                   'Login',
-                  style: TextStyle(fontSize: 18,color : Colors.white70),
+                  style: TextStyle(fontSize: 15),
                 ),
               ),
             ),
