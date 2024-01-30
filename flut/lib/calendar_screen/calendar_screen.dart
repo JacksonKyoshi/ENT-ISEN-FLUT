@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/calendar_service.dart';
-import '../homescreen/home_screen.dart';
 import '../widgets/hamburger_menu.dart';
 import '../widgets/week_view.dart';
 import '../widgets/day_view.dart';
@@ -45,16 +44,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2030),
     );
-    if (picked != null && picked != selectedDay)
+    if (picked != null && picked != selectedDay) {
       setState(() {
         selectedDay = picked;
       });
+    }
   }
 
   bool isWithinSelectedWeek(DateTime date) {
     final startOfWeek = DateTime(selectedDay.year, selectedDay.month,
         selectedDay.day - selectedDay.weekday + 1);
-    final endOfWeek = startOfWeek.add(Duration(days: 7));
+    final endOfWeek = startOfWeek.add(const Duration(days: 7));
 
     return date.isAfter(startOfWeek) && date.isBefore(endOfWeek);
   }
@@ -116,24 +116,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
         builder: (context, calendarEventProvider, child) {
           List<CalendarEvent>? events = calendarEventProvider.events;
           if (events == null) {
-            return CircularProgressIndicator();
+            return const CircularProgressIndicator();
           } else {
             events = events
                 .where((event) => isWithinSelectedWeek(event.start!))
                 .toList();
             events.sort((a, b) => a.start!.compareTo(b.start!));
 
-            List<CalendarEvent> selectedDayEvents = events
-                .where((event) => event.start!.day == selectedDay.day)
-                .toList();
 
             return Column(
               children: <Widget>[
+                const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     IconButton(
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: onPreviousWeek,
                     ),
                     Expanded(
@@ -143,7 +141,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                     ),
                     IconButton(
-                      icon: Icon(Icons.arrow_forward),
+                      icon: const Icon(Icons.arrow_forward),
                       onPressed: onNextWeek,
                     ),
                   ],
@@ -154,7 +152,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ElevatedButton(
                       onPressed: onToday,
                       //button + text + icon
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.today),
                           Text(
@@ -166,7 +164,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ElevatedButton(
                       onPressed: onSelectDay,
                       //button + text + icon
-                      child: Row(
+                      child: const Row(
                         children: [
                           Icon(Icons.calendar_month),
                           Text(
@@ -191,7 +189,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 if (selectedEvent != null)
                   Container(
                     constraints:
-                        BoxConstraints(maxHeight: 300), // Set a maximum height
+                        const BoxConstraints(maxHeight: 300), // Set a maximum height
                     child: EventDetailView(event: selectedEvent!),
                   ),
               ],
