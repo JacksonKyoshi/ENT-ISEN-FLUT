@@ -18,7 +18,6 @@ class Absence {
   });
 
   factory Absence.fromJson(Map<String, dynamic> json) {
-    print(json);
     return Absence(
       date: json['Date'] as String? ?? '',
       reason: json['Reason'] as String? ?? '',

@@ -21,8 +21,6 @@ class _NotesScreenState extends State<NotesScreen> {
     super.initState();
     String token = TokenManager.getInstance().getToken();
     _notationsFuture = apiService.fetchNotations(token) as Future<List<Notation>>;
-
-    print('token : fils de pute de merde pourquoi tu marches aps enculé $token');
   }
 
   @override

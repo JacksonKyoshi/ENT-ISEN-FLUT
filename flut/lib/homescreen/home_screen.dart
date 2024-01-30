@@ -304,7 +304,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           )
                               : Card(
                             child: ListTile(
-                              title: Text('Aucune absence'),
+                              title: Text('Aucune absences'),
                             ),
                           ),
                         ],

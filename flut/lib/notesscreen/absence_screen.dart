@@ -46,19 +46,23 @@ class _AbsenceViewState extends State<AbsenceView> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              return ListView.builder(
-                itemCount: snapshot.data!.length,
-                itemBuilder: (context, index) {
-                  Absence absence = snapshot.data![index];
-
-                  return ListTile(
-                    title: Text('Date: ${absence.date}'),
-                    subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
-                    trailing: const Icon(Icons.arrow_forward),
-                    // Add more details if needed
-                  );
-                },
-              );
+              if (snapshot.data!.isEmpty) {
+                return const Center(
+                  child: Text('Aucune absences', style: TextStyle(fontSize: 20)),
+                );
+              } else {
+                return ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    Absence absence = snapshot.data![index];
+                    return ListTile(
+                      title: Text('Date: ${absence.date}'),
+                      subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
+                      trailing: const Icon(Icons.arrow_forward),
+                    );
+                  },
+                );
+              }
             }
           },
         ),
