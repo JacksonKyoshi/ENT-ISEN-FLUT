@@ -5,6 +5,7 @@ import 'package:ent/services/ics_parser.dart';
 import 'package:flutter/material.dart';
 
 import '../main.dart';
+import '../services/User_service.dart';
 import '../services/api_service.dart';
 import '../widgets/day_view.dart';
 import '../widgets/event_detail.dart';
@@ -32,7 +33,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
     selectedDay = DateTime.now(); // Set selectedDay to the current day
     IcsParser icsParser = IcsParser();
-    calendarEvents = IcsParser.parse('pierre.geiguer');
+    calendarEvents = IcsParser.parse(UserManager.getInstance().getUsername().toLowerCase());
   }
 
   void onToday() {

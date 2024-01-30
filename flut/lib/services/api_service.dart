@@ -19,7 +19,8 @@ class ApiService {
 
     if (response.statusCode == 200) {
       List<dynamic> notationsJson = json.decode(response.body);
-
+      print(response.body);
+      print(response.body.toString());
       List<Notation> notations = notationsJson
           .map((json) => Notation.fromJson(json))
           .toList();
