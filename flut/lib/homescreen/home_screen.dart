@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../calendar_screen/calendar_screen.dart';
+import '../model/absences.dart';
+import '../notesscreen/absence_screen.dart';
 import '../services/User_service.dart';
 import '../services/calendar_service.dart';
 import '../model/notation.dart';
@@ -255,7 +257,65 @@ class _HomeScreenState extends State<HomeScreen> {
                       : [const CircularProgressIndicator()],
                 ),
               ),
-
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AbsenceView()),
+                  );
+                },
+                child: FutureBuilder<List<Absence>>(
+                  future: apiService.fetchAbsence(TokenManager.getInstance().getToken()),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      int totalAbsences = snapshot.data!.isEmpty
+                          ? 0
+                          : snapshot.data!
+                          .map((absence) => int.parse(absence.hours))
+                          .reduce((value, element) => value + element);
+                    }
+                    if (snapshot.hasData) {
+                      int totalAbsences = snapshot.data!.length;
+                      return Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Container(
+                              padding: const EdgeInsets.all(20),
+                              child: Text('Total Absences: $totalAbsences H', style: TextStyle(fontSize: 20)),
+                            ),
+                          ),
+                          totalAbsences > 0
+                              ? Container(
+                            height: 200, // specify a height
+                            child: ListView.builder(
+                              itemCount: totalAbsences,
+                              itemBuilder: (context, index) {
+                                Absence absence = snapshot.data![index];
+                                return Card(
+                                  child: ListTile(
+                                    title: Text('Date: ${absence.date}'),
+                                    subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
+                                    trailing: const Icon(Icons.arrow_forward),
+                                  ),
+                                );
+                              },
+                            ),
+                          )
+                              : Card(
+                            child: ListTile(
+                              title: Text('Aucune absence'),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (snapshot.hasError) {
+                      return Text('${snapshot.error}');
+                    }
+                    return CircularProgressIndicator();
+                  },
+                ),
+              ),
             ],
           ),
         ),
