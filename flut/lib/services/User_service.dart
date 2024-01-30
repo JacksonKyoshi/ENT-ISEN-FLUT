@@ -10,12 +10,12 @@ class UserManager {
     return _instance;
   }
 
-  void setToken(String token) { //setter
+  void setUsername(String token) { //setter
     _username = token;
   }
 
 
-  String getToken() { //getter
+  String getUsername() { //getter
     return _username;
   }
 }

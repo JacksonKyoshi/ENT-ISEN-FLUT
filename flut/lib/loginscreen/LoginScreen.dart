@@ -1,4 +1,5 @@
 import 'package:ent/main.dart';
+import 'package:ent/services/User_service.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
@@ -78,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
                   // Vérification du code de statut de la réponse
                   if (response.statusCode == 200) {
                     TokenManager.getInstance().setToken(response.body);
+                    UserManager.getInstance().setUsername(username);
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => MyApp()),
