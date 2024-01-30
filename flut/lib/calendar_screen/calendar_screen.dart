@@ -1,16 +1,12 @@
-// screens/home_screen.dart
-import 'dart:convert';
-
-import 'package:ent/services/ics_parser.dart';
 import 'package:flutter/material.dart';
-
-import '../main.dart';
-import '../services/api_service.dart';
+import 'package:provider/provider.dart';
+import '../services/calendar_service.dart';
+import '../homescreen/home_screen.dart';
+import '../widgets/hamburger_menu.dart';
+import '../widgets/week_view.dart';
 import '../widgets/day_view.dart';
 import '../widgets/event_detail.dart';
-import '../widgets/hamburger_menu.dart';
-import '../widgets/month_view.dart';
-import '../widgets/week_view.dart';
+import '../services/ics_parser.dart'; // Add this line
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
@@ -20,19 +16,20 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
   DateTime selectedDay = DateTime.now();
-  CalendarEvent? selectedEvent;
-
-  Future<List<CalendarEvent>>? calendarEvents;
-  Future<String>? json_calendar;
+  CalendarEvent? selectedEvent; // Now CalendarEvent should be recognized
 
   @override
   void initState() {
     super.initState();
     selectedDay = DateTime.now(); // Set selectedDay to the current day
-    IcsParser icsParser = IcsParser();
-    calendarEvents = IcsParser.parse('pierre.geiguer');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    Provider.of<CalendarEventProvider>(context, listen: false)
+        .fetchEvents('pierre.geiguer');
   }
 
   void onToday() {
@@ -67,7 +64,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       selectedDay = DateTime(2015, 8);
     } else if (selectedDay.isAfter(DateTime(2030))) {
       selectedDay = DateTime(2030);
-    }else {
+    } else {
       setState(() {
         selectedDay = selectedDay.subtract(const Duration(days: 1));
       });
@@ -80,7 +77,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       selectedDay = DateTime(2015, 8);
     } else if (selectedDay.isAfter(DateTime(2030))) {
       selectedDay = DateTime(2030);
-    }else {
+    } else {
       setState(() {
         selectedDay = selectedDay.add(const Duration(days: 1));
       });
@@ -115,16 +112,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
         backgroundColor: Colors.red,
       ),
       drawer: const HamburgerMenu(),
-      body: FutureBuilder<List<CalendarEvent>>(
-        future: calendarEvents,
-        builder: (BuildContext context,
-            AsyncSnapshot<List<CalendarEvent>> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+      body: Consumer<CalendarEventProvider>(
+        builder: (context, calendarEventProvider, child) {
+          List<CalendarEvent>? events = calendarEventProvider.events;
+          if (events == null) {
             return CircularProgressIndicator();
-          } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          } else if (snapshot.hasData && snapshot.data != null) {
-            List<CalendarEvent> events = snapshot.data!;
+          } else {
             events = events
                 .where((event) => isWithinSelectedWeek(event.start!))
                 .toList();
@@ -185,7 +178,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ],
                 ),
                 Expanded(
-                  flex: 2, // Increase this value to give more space to the day view
+                  flex:
+                      2, // Increase this value to give more space to the day view
                   child: DayView(
                     date: selectedDay,
                     onEventSelected: onEventSelected,
@@ -196,15 +190,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
                 if (selectedEvent != null)
                   Container(
-                    constraints: BoxConstraints(
-                        maxHeight: 300
-                    ), // Set a maximum height
+                    constraints:
+                        BoxConstraints(maxHeight: 300), // Set a maximum height
                     child: EventDetailView(event: selectedEvent!),
                   ),
               ],
             );
-          } else {
-            return CircularProgressIndicator();
           }
         },
       ),
