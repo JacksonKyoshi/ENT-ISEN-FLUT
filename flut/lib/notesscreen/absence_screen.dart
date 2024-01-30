@@ -15,16 +15,18 @@ class AbsenceView extends StatefulWidget {
 class _AbsenceViewState extends State<AbsenceView> {
   final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
 
-  late Future<List<Absence>> _notationsFuture;
+  late Future<List<Absence>> _absenceFuture;
+
 
   @override
   void initState() {
     super.initState();
-    _notationsFuture = apiService.fetchNotations('FAKETOKEN') as Future<List<Absence>>;
+    _absenceFuture = apiService.fetchAbsence('11C9F61D8589AFCCCAADC47F2E67EA8E');
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         //white text color
@@ -35,10 +37,10 @@ class _AbsenceViewState extends State<AbsenceView> {
       drawer: const HamburgerMenu(),
       body: Center(
         child: FutureBuilder<List<Absence>>(
-          future: _notationsFuture,
+          future: _absenceFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
@@ -46,10 +48,11 @@ class _AbsenceViewState extends State<AbsenceView> {
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   Absence absence = snapshot.data![index];
+
                   return ListTile(
-                    title: Text('Date: ${absence.Date}'),
-                    subtitle: Text('Course: ${absence.Course}\nHeures: ${absence.Hours}'),
-                    trailing: Icon(Icons.arrow_forward),
+                    title: Text('Date: ${absence.date}'),
+                    subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
+                    trailing: const Icon(Icons.arrow_forward),
                     // Add more details if needed
                   );
                 },
