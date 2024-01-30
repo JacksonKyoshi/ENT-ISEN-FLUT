@@ -8,22 +8,16 @@ void main() {
 }
 //test push
 class MyApp extends StatelessWidget {
-  String TOKEN;
-  String username;
-
-  MyApp(this.TOKEN,this.username);
-
 
   @override
   Widget build(BuildContext context) {
-    print('OMG LE CUL LE TOKEN DE MERDE: $TOKEN');
     return MaterialApp(
       title: 'ENT ISEN MOODLE',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
         useMaterial3: true,
       ),
-      home: const HomeScreen(),
+      home:HomeScreen(),
     );
   }
 

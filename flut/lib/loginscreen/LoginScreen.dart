@@ -76,9 +76,10 @@ class _LoginPageState extends State<LoginPage> {
                   if (response.statusCode == 200) {
                     final String token = response.body;
                     print("token : $token");
+
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyApp(token,username)),
+                      MaterialPageRoute(builder: (context) => MyApp()),
                     );
 
                     /*
