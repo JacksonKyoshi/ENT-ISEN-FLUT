@@ -13,7 +13,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String retrievedToken = TokenManager.getInstance().getToken();
-
     print('Token: $retrievedToken');
 
     return MaterialApp(

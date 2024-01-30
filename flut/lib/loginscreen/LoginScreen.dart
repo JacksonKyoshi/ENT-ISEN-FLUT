@@ -80,6 +80,8 @@ class _LoginPageState extends State<LoginPage> {
                   if (response.statusCode == 200) {
                     TokenManager.getInstance().setToken(response.body);
                     UserManager.getInstance().setUsername(username);
+                    print("User :");
+                    print(UserManager.getInstance().getUsername());
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => MyApp()),
@@ -101,6 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                     print('Erreur lors de la requête. Code de statut: ${response.statusCode}');
                   }
                 } catch (e) {
+
                   print('Erreur lors de la requête: $e');
                 }
               }

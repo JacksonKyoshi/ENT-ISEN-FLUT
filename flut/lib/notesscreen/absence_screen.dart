@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../model/absences.dart';
 import '../services/api_service.dart';
+import '../services/token_service.dart';
 import '../widgets/hamburger_menu.dart';
 
 
@@ -20,7 +21,8 @@ class _AbsenceViewState extends State<AbsenceView> {
   @override
   void initState() {
     super.initState();
-    _notationsFuture = apiService.fetchNotations('FAKETOKEN') as Future<List<Absence>>;
+    String token=TokenManager.getInstance().getToken();
+    _notationsFuture = apiService.fetchNotations(token) as Future<List<Absence>>;
   }
 
   @override
@@ -38,7 +40,7 @@ class _AbsenceViewState extends State<AbsenceView> {
           future: _notationsFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
+              return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
@@ -49,7 +51,7 @@ class _AbsenceViewState extends State<AbsenceView> {
                   return ListTile(
                     title: Text('Date: ${absence.Date}'),
                     subtitle: Text('Course: ${absence.Course}\nHeures: ${absence.Hours}'),
-                    trailing: Icon(Icons.arrow_forward),
+                    trailing: const Icon(Icons.arrow_forward),
                     // Add more details if needed
                   );
                 },

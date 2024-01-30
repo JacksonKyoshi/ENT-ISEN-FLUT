@@ -1,10 +1,11 @@
 // screens/home_screen.dart
 import 'package:flutter/material.dart';
 
-import '../main.dart';
+
 import '../model/notation.dart';
 import '../notesscreen/note_screen.dart';
 import '../services/api_service.dart';
+import '../services/token_service.dart';
 import '../widgets/hamburger_menu.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,10 +21,15 @@ class _HomeScreenState extends State<HomeScreen> {
   late Future<List<Notation>> _notationsFuture;
 
   @override
+  @override
   void initState() {
     super.initState();
-    _notationsFuture = apiService.fetchNotations('FAKETOKEN') as Future<List<Notation>>;
-  }
+    String token = TokenManager.getInstance().getToken();
+    print('token de fou : $token');
+    _notationsFuture = apiService.fetchNotations(token);
+
+    }
+
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Column(
                           children: [
                             Text(snapshot.data![0].code),
-                            Text(snapshot.data![0].note.toString(), style: const TextStyle(fontSize: 30)),
+                            Text(snapshot.data![0].note, style: const TextStyle(fontSize: 30)),
                           ],
                         ),
                       );

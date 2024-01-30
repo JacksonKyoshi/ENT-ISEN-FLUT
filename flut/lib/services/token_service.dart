@@ -16,7 +16,7 @@ class TokenManager {
 
 
   String getToken() { //getter
-    return _token;
+    return _token.toString();
   }
 }
 
