@@ -1,31 +1,34 @@
 class Absence {
-  final String Date;
-  final String Reason;
-  final String Duration;
-  final String Hours;
-  final List<String> Teachers;
-  final String Subject;
-  final String Course;
+  final String date;
+  final String reason;
+  final String duration;
+  final String hours;
+  final String course;
+  final List<String> teachers;
+  final String subject;
 
   Absence({
-    required this.Date,
-    required this.Reason,
-    required this.Duration,
-    required this.Hours,
-    required this.Teachers,
-    required this.Subject,
-    required this.Course,
+    required this.date,
+    required this.reason,
+    required this.duration,
+    required this.hours,
+    required this.course,
+    required this.teachers,
+    required this.subject,
   });
 
   factory Absence.fromJson(Map<String, dynamic> json) {
+    print(json);
     return Absence(
-      Date: json['Date'],
-      Reason: json['Reason'],
-      Duration: json['Duration'],
-      Hours: json['Hours'],
-      Teachers: List<String>.from(json['teachers']),
-      Subject: json['Subject'],
-      Course: json['Course'],
+      date: json['Date'] as String? ?? '',
+      reason: json['Reason'] as String? ?? '',
+      duration: json['Duration'] as String? ?? '',
+      hours: json['Hours'] as String? ?? '',
+      course: json['Course'] as String? ?? '',
+      teachers: List<String>.from(json['Teachers'] as List<dynamic>? ?? []),
+      subject: json['Subject'] as String? ?? '',
     );
   }
+
+
 }
