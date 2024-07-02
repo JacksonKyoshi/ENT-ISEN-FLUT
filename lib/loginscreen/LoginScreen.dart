@@ -65,7 +65,7 @@ class _LoginPageState extends State<LoginPage> {
               onPressed: () async {
                 String username = _usernameController.text;
                 String password = _passwordController.text;
-                const url = 'https://api.isen-cyber.ovh/v1/token';
+                const url = 'https://api-ent.isenengineering.fr/v1/token';
 
                 final Map<String, String> data = {
                   'username': username,

@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
+  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
 
   late Future<List<Notation>> _notationsFuture;
   Timer? _timer;
@@ -32,6 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     String token = TokenManager.getInstance().getToken();
+    print('répoonse $token');
     _notationsFuture = apiService.fetchNotations(token);
     Provider.of<CalendarEventProvider>(context, listen: false)
         .fetchEvents(UserManager.getInstance().getUsername().toLowerCase())

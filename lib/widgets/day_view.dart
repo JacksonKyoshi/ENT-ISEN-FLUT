@@ -21,7 +21,7 @@ class DayView extends StatelessWidget {
         child: Center(
           child: Text(
             'Pas de cours aujourd\'hui',
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
       );

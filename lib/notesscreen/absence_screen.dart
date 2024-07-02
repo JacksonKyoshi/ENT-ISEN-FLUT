@@ -14,7 +14,7 @@ class AbsenceView extends StatefulWidget {
 }
 
 class _AbsenceViewState extends State<AbsenceView> {
-  final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
+  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
 
   late Future<List<Absence>> _absenceFuture;
 

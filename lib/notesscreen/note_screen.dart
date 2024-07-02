@@ -12,7 +12,7 @@ class NotesScreen extends StatefulWidget {
   _NotesScreenState createState() => _NotesScreenState();
 }
 class _NotesScreenState extends State<NotesScreen> {
-  final ApiService apiService = ApiService('https://api.isen-cyber.ovh');
+  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
 
   late Future<List<Notation>> _notationsFuture;
 
