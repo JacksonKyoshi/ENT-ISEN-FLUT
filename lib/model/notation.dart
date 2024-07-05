@@ -2,7 +2,7 @@
 class Notation {
   final String date;
   final String code;
-  final String note;
+  late final String note;
   final String name;
   final List<String> teachers;
 

@@ -4,6 +4,7 @@ import 'dart:convert';
 
 import '../model/notation.dart';
 import '../model/absences.dart';
+import '../model/notation_class.dart';
 
 
 class ApiService {
@@ -24,6 +25,23 @@ class ApiService {
           .toList();
 
       return notations;
+    } else {
+      throw Exception('Failed to load notations');
+    }
+  }
+
+  Future<List<NotationClass>> fetchNotationsClass(String token) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/v1/notations/class'),
+      headers: {'Token': token},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> notationsJson = json.decode(response.body);
+      List<NotationClass> notationsClass = notationsJson
+          .map((json) => NotationClass.fromJson(json))
+          .toList();
+      return notationsClass;
     } else {
       throw Exception('Failed to load notations');
     }

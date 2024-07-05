@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-
 import '../model/notation.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
 import '../widgets/hamburger_menu.dart';
+import 'note_detail.dart'; // Importer la nouvelle classe
 
 class NotesScreen extends StatefulWidget {
   const NotesScreen({Key? key}) : super(key: key);
@@ -11,6 +11,7 @@ class NotesScreen extends StatefulWidget {
   @override
   _NotesScreenState createState() => _NotesScreenState();
 }
+
 class _NotesScreenState extends State<NotesScreen> {
   final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
 
@@ -46,8 +47,9 @@ class _NotesScreenState extends State<NotesScreen> {
                 itemBuilder: (context, index) {
                   Notation notation = snapshot.data![index];
                   return ListTile(
-                    title: Text('Date: ${notation.date}'),
-                    subtitle: Text('Code: ${notation.code}\nNote: ${notation.note}'),
+                    title: Text('Code: ${notation.code}'),
+                    subtitle: Text('Date: ${notation.date}\nNote: ${notation.note}'),
+                    onTap: () => _showEditDialog(context, notation.code),
                   );
                 },
               );
@@ -55,6 +57,15 @@ class _NotesScreenState extends State<NotesScreen> {
           },
         ),
       ),
+    );
+  }
+
+  void _showEditDialog(BuildContext context, String code) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return NoteDetail(code: code);
+      },
     );
   }
 }
