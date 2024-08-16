@@ -49,6 +49,9 @@ class _MainHandlerState extends State<MainHandler> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+          title: const Text('Flut - ENT ISEN'),
+        ),
         body: PageView(
           controller: _pageController,
           onPageChanged: _onPageChanged,
@@ -56,20 +59,6 @@ class _MainHandlerState extends State<MainHandler> {
         ),
         bottomNavigationBar: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          backgroundColor: const Color(0xFF2A2450),
-          selectedFontSize: 14,
-          selectedItemColor: const Color(0xFFFFFFFF),
-          selectedIconTheme: const IconThemeData(
-              size: 32,
-              color: Color(0xFFFFFFFF)
-          ),
-          unselectedFontSize: 10,
-          unselectedItemColor: const Color(0xFF888888),
-          unselectedIconTheme: const IconThemeData(
-              size: 24,
-              color: Color(0xFF888888)
-          ),
-          showUnselectedLabels: true,
           items: const <BottomNavigationBarItem>[
             BottomNavigationBarItem(
                 icon: Icon(Icons.home),

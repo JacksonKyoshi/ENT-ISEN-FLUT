@@ -103,13 +103,6 @@ class _HomeScreenState extends State<HomeScreen> {
       );
     }
     return Scaffold(
-      appBar: AppBar(
-        //white text color
-        foregroundColor: Colors.white,
-        title: const Text('ENT ISEN Toulon'),
-        backgroundColor: Colors.red,
-      ),
-      drawer: const HamburgerMenu(),
       body: SingleChildScrollView(
         // Add this
         child: Center(

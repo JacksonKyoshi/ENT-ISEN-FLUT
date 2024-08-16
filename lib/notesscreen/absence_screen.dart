@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../model/absences.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
-import '../widgets/hamburger_menu.dart';
 
 
 class AbsenceView extends StatefulWidget {
@@ -30,13 +29,6 @@ class _AbsenceViewState extends State<AbsenceView> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
-        //white text color
-        foregroundColor: Colors.white,
-        title: const Text('ENT ISEN Toulon'),
-        backgroundColor: Colors.red,
-      ),
-      drawer: const HamburgerMenu(),
       body: Center(
         child: FutureBuilder<List<Absence>>(
           future: _absenceFuture,

@@ -27,12 +27,6 @@ class _NotesScreenState extends State<NotesScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-        title: const Text('ENT ISEN Toulon'),
-        backgroundColor: Colors.red,
-      ),
-      drawer: const HamburgerMenu(),
       body: Center(
         child: FutureBuilder<List<Notation>>(
           future: _notationsFuture,
