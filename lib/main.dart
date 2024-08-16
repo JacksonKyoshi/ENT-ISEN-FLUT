@@ -1,3 +1,4 @@
+import 'package:ent/main_handler.dart';
 import 'package:ent/services/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -21,8 +22,9 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.red),
           primarySwatch: Colors.red,
+          splashColor: const Color(0x00000000)
         ),
-        home: HomeScreen(),
+        home: MainHandler(),
       ),
     );
   }
