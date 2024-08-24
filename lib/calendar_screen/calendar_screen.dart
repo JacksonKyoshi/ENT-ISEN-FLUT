@@ -107,12 +107,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-        title: const Text('ENT ISEN Toulon'),
-        backgroundColor: Colors.red,
-      ),
-      drawer: const HamburgerMenu(),
       body: Consumer<CalendarEventProvider>(
         builder: (context, calendarEventProvider, child) {
           List<CalendarEvent>? events = calendarEventProvider.events;
