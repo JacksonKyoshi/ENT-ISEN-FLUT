@@ -1,12 +1,12 @@
-import 'package:ent/homescreen/home_screen.dart';
+import 'package:ent/screens/home_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../calendar_screen/calendar_screen.dart';
-import '../notesscreen/absence_screen.dart';
-import '../notesscreen/note_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
+import '../screens/absence_screen.dart';
+import '../screens/notes/note_screen.dart';
 
 class HamburgerMenu extends StatelessWidget {
   const HamburgerMenu({super.key});

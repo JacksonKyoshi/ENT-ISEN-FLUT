@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import '../calendar_screen/calendar_screen.dart';
+import 'calendar/calendar_screen.dart';
 import '../model/absences.dart';
-import '../notesscreen/absence_screen.dart';
+import 'absence_screen.dart';
 import '../services/User_service.dart';
 import '../services/calendar_service.dart';
 import '../model/notation.dart';
-import '../notesscreen/note_screen.dart';
+import 'notes/note_screen.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
 import '../widgets/hamburger_menu.dart';

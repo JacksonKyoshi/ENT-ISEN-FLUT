@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../calendar_screen/calendar_screen.dart';
+import '../screens/calendar/calendar_screen.dart';
 import '../services/ics_parser.dart'; // Replace with your actual path
 
 class DayView extends StatelessWidget {

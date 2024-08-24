@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../model/notation_class.dart';
-import '../services/api_service.dart';
-import '../services/token_service.dart';
+import '../../model/notation_class.dart';
+import '../../services/api_service.dart';
+import '../../services/token_service.dart';
 
 class NoteDetail extends StatelessWidget {
   final String code;

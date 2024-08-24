@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../model/notation.dart';
-import '../services/api_service.dart';
-import '../services/token_service.dart';
-import '../widgets/hamburger_menu.dart';
+import '../../model/notation.dart';
+import '../../services/api_service.dart';
+import '../../services/token_service.dart';
+import '../../widgets/hamburger_menu.dart';
 import 'note_detail.dart'; // Importer la nouvelle classe
 
 class NotesScreen extends StatefulWidget {

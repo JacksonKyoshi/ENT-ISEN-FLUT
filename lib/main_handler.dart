@@ -1,7 +1,7 @@
-import 'package:ent/calendar_screen/calendar_screen.dart';
-import 'package:ent/homescreen/home_screen.dart';
-import 'package:ent/notesscreen/absence_screen.dart';
-import 'package:ent/notesscreen/note_screen.dart';
+import 'package:ent/screens/calendar/calendar_screen.dart';
+import 'package:ent/screens/home_screen.dart';
+import 'package:ent/screens/absence_screen.dart';
+import 'package:ent/screens/notes/note_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainHandler extends StatefulWidget {
