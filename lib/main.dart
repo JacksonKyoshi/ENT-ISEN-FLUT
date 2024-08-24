@@ -5,7 +5,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'services/calendar_service.dart';
 import 'homescreen/home_screen.dart';
-import 'loginscreen/LoginScreen.dart';
+import 'loginscreen/login_screen.dart';
 
 
 void main() {
