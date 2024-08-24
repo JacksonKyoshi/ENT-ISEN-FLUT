@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../services/ics_parser.dart';
+import '../model/calendar_event.dart';
 
 class EventDetailView extends StatelessWidget {
   final CalendarEvent event;
@@ -26,7 +26,7 @@ class EventDetailView extends StatelessWidget {
               children: <Widget>[
                 const Divider(color: Colors.grey), // This adds a delimiter on top
                 Text(
-                  event.summary ?? '',
+                  event.className,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8.0),
@@ -40,9 +40,7 @@ class EventDetailView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8.0),
                 Text(
-                  event.description.entries
-                      .map((e) => '${e.key}: ${e.value}')
-                      .join('\n'),
+                  event.title.replaceAll('-', '\n'),
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),

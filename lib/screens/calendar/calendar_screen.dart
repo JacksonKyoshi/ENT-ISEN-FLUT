@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../../services/calendar_service.dart';
-import '../../services/User_service.dart';
+import '../../services/api_service.dart';
+import '../../services/token_service.dart';
 import '../../widgets/day_view.dart';
 import '../../widgets/event_detail.dart';
-import '../../widgets/hamburger_menu.dart';
 import '../../widgets/week_view.dart';
-import '../../services/ics_parser.dart'; // Add this line
+import '../../model/calendar_event.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
@@ -16,25 +14,33 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
+  final String token = TokenManager.getInstance().getToken();
+
   DateTime selectedDay = DateTime.now();
   CalendarEvent? selectedEvent; // Now CalendarEvent should be recognized
+
+  late Future<List<CalendarEvent>> _calendarFuture;
 
   @override
   void initState() {
     super.initState();
     selectedDay = DateTime.now(); // Set selectedDay to the current day
+    updateCalendarEvents();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    Provider.of<CalendarEventProvider>(context, listen: false)
-        .fetchEvents('pierre.geiguer');
+  void updateCalendarEvents() {
+    _calendarFuture = apiService.fetchCalendar(
+        token,
+        DateTime(selectedDay.year, selectedDay.month, selectedDay.day),
+        DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59)
+    );
   }
 
   void onToday() {
     setState(() {
       selectedDay = DateTime.now();
+      updateCalendarEvents();
     });
   }
 
@@ -48,6 +54,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (picked != null && picked != selectedDay) {
       setState(() {
         selectedDay = picked;
+        updateCalendarEvents();
       });
     }
   }
@@ -68,6 +75,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } else {
       setState(() {
         selectedDay = selectedDay.subtract(const Duration(days: 1));
+        updateCalendarEvents();
       });
     }
   }
@@ -81,6 +89,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } else {
       setState(() {
         selectedDay = selectedDay.add(const Duration(days: 1));
+        updateCalendarEvents();
       });
     }
   }
@@ -95,6 +104,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       } else if (selectedDay.isAfter(DateTime(2030))) {
         selectedDay = DateTime(2030);
       }
+      updateCalendarEvents();
     });
   }
 
@@ -107,17 +117,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Consumer<CalendarEventProvider>(
-        builder: (context, calendarEventProvider, child) {
-          List<CalendarEvent>? events = calendarEventProvider.events;
-          if (events == null) {
+      body: FutureBuilder<List<CalendarEvent>>(
+        future: _calendarFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
             return const CircularProgressIndicator();
+          } else if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
           } else {
-            events = events
-                .where((event) => isWithinSelectedWeek(event.start!))
-                .toList();
-            events.sort((a, b) => a.start!.compareTo(b.start!));
-
+            List<CalendarEvent> events = snapshot.data ?? [];
 
             return Column(
               children: <Widget>[
@@ -176,9 +184,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: DayView(
                     date: selectedDay,
                     onEventSelected: onEventSelected,
-                    events: events
-                        .where((event) => event.start!.day == selectedDay.day)
-                        .toList(),
+                    events: events,
                   ),
                 ),
                 if (selectedEvent != null)

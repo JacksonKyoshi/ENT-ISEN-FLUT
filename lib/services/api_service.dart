@@ -1,4 +1,5 @@
 // services/api_service.dart
+import 'package:ent/model/calendar_event.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -62,6 +63,21 @@ class ApiService {
       return absence;
     } else {
       throw Exception('Failed to load absences');
+    }
+  }
+
+  Future<List<CalendarEvent>> fetchCalendar(String token, DateTime start, DateTime end) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/v1/agenda?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}'),
+      headers: {'Token': token},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> calendarJson = json.decode(response.body);
+      List<CalendarEvent> calendarEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
+      return calendarEvents;
+    } else {
+      throw Exception('Failed to load calendar');
     }
   }
 }

@@ -1,8 +1,8 @@
 class CalendarEvent {
   final String id;
   final String title;
-  final String start;
-  final String end;
+  final DateTime start;
+  final DateTime end;
   final bool allDay;
   final bool editable;
   final String className;
@@ -21,10 +21,10 @@ class CalendarEvent {
     return CalendarEvent(
         id: json['id'] as String? ?? '',
         title: json['title'] as String? ?? '',
-        start: json['start'] as String? ?? '',
-        end: json['end'] as String? ?? '',
-        allDay: json['allDay'],
-        editable: json['editable'],
+        start: DateTime.parse(json['start']).toLocal(),
+        end: DateTime.parse(json['end']).toLocal(),
+        allDay: json['allDay'] as bool? ?? false,
+        editable: json['editable'] as bool? ?? false,
         className: json['className'] as String? ?? ''
     );
   }

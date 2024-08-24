@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../screens/calendar/calendar_screen.dart';
-import '../services/ics_parser.dart'; // Replace with your actual path
-
+import '../model/calendar_event.dart';
 class DayView extends StatelessWidget {
   final DateTime date;
   final ValueChanged<CalendarEvent> onEventSelected;
@@ -33,22 +31,23 @@ class DayView extends StatelessWidget {
           return Card(
               child: ListTile(
                leading: Icon(
-                 event.summary!.contains('PROJET') ? Icons.bar_chart :
-                 event.summary!.contains('TD') ? Icons.calculate :
-                 event.summary!.contains('TP') ? Icons.memory :
-                 event.summary!.contains('CM') ? Icons.mic :
-                 event.summary!.contains('DS') ? Icons.school :
-                 event.summary!.contains('EXAMEN') ? Icons.school :
-                 event.summary!.contains('RATTRAPAGE') ? Icons.school :
-                 event.summary!.contains('REUNION') ? Icons.people :
+                 event.title.toLowerCase().contains('projet') ? Icons.bar_chart :
+                 event.title.toLowerCase().contains('travaux dirigés') ? Icons.calculate :
+                 event.title.toLowerCase().contains('travaux pratiques') ? Icons.memory :
+                 event.title.toLowerCase().contains('cours magistral') ? Icons.mic :
+                 event.title.toLowerCase().contains('ds') ? Icons.school :
+                 event.title.toLowerCase().contains('examen') ? Icons.school :
+                 event.title.toLowerCase().contains('rattrapage') ? Icons.school :
+                 event.title.toLowerCase().contains('réunion') ? Icons.people :
+                 event.title.toLowerCase().contains('révisions') ? Icons.content_paste :
                   Icons.event,
                ),
             title: Text(
-              '${DateFormat('HH:mm').format(event.start!)} - ${DateFormat('HH:mm').format(event.end!)}',
+              '${DateFormat('HH:mm').format(event.start)} - ${DateFormat('HH:mm').format(event.end)}',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             subtitle: Text(
-              '${event.summary}',
+              event.title,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             onTap: () => onEventSelected(event),
