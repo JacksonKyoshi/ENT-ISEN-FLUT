@@ -31,11 +31,11 @@ class EventDetailView extends StatelessWidget {
                 ),
                 const SizedBox(height: 8.0),
                 Text(
-                  'Cours du: ${DateFormat('dd MMM y').format(event.start!)}',
+                  'Cours du: ${DateFormat('dd MMM y').format(event.start)}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  'De: ${DateFormat('HH:mm').format(event.start!)} à ${DateFormat('HH:mm').format(event.end!)}',
+                  'De: ${DateFormat('HH:mm').format(event.start)} à ${DateFormat('HH:mm').format(event.end)}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 const SizedBox(height: 8.0),

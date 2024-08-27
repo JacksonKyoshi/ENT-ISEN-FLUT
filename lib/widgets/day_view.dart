@@ -28,30 +28,89 @@ class DayView extends StatelessWidget {
         itemCount: events.length,
         itemBuilder: (context, index) {
           CalendarEvent event = events[index];
-          return Card(
-              child: ListTile(
-               leading: Icon(
-                 event.title.toLowerCase().contains('projet') ? Icons.bar_chart :
-                 event.title.toLowerCase().contains('travaux dirigés') ? Icons.calculate :
-                 event.title.toLowerCase().contains('travaux pratiques') ? Icons.memory :
-                 event.title.toLowerCase().contains('cours magistral') ? Icons.mic :
-                 event.title.toLowerCase().contains('ds') ? Icons.school :
-                 event.title.toLowerCase().contains('examen') ? Icons.school :
-                 event.title.toLowerCase().contains('rattrapage') ? Icons.school :
-                 event.title.toLowerCase().contains('réunion') ? Icons.people :
-                 event.title.toLowerCase().contains('révisions') ? Icons.content_paste :
-                  Icons.event,
-               ),
-            title: Text(
-              '${DateFormat('HH:mm').format(event.start)} - ${DateFormat('HH:mm').format(event.end)}',
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-            subtitle: Text(
-              event.title,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            onTap: () => onEventSelected(event),
-          ));
+          List<String> eventDescriptions = event.title.split(" - ");
+          /* by now this is the pattern in the title :
+          0: start hour
+          1: end hour
+          2: subject
+          3: teacher's name
+          4: teacher's surname
+          5: class room
+          6: class type
+          7: duration
+          8: course id
+          */
+          return Container(
+            height: MediaQuery.of(context).size.height/5,
+              child: Card(
+                child: ListTile(
+                  contentPadding: EdgeInsets.fromLTRB(10, 0, 0, MediaQuery.of(context).size.height/64),
+                subtitle: Row(
+                  children: [
+                    Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                            DateFormat('HH:mm').format(event.start),
+                            style: Theme.of(context).textTheme.bodyLarge
+                        ),
+                        Text(
+                            DateFormat('HH:mm').format(event.end),
+                            style: Theme.of(context).textTheme.bodyLarge
+                        ),
+                      ]
+                    ),
+                    VerticalDivider(color: Colors.purple, thickness: 4),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.subject, size: 26),
+                            Text(
+                              eventDescriptions[2],
+                              style: Theme.of(context).textTheme.titleMedium
+                            )
+                          ],
+                        ),
+                        Row(
+                          children: <Widget>[
+                            Icon(Icons.person),
+                            Text('${eventDescriptions[3]} ${eventDescriptions[4]}')
+                          ],
+                        ),
+                        eventDescriptions[5] != "" ? Row(
+                          children: <Widget>[
+                            Icon(Icons.location_on),
+                            Text(eventDescriptions[5])
+                          ],
+                        ) : Container(),
+                        Row(
+                          children: <Widget>[
+                            Icon(
+                              event.title.toLowerCase().contains('projet') ? Icons.bar_chart :
+                              event.title.toLowerCase().contains('travaux dirigés') ? Icons.calculate :
+                              event.title.toLowerCase().contains('travaux pratiques') ? Icons.memory :
+                              event.title.toLowerCase().contains('cours magistral') ? Icons.mic :
+                              event.title.toLowerCase().contains('ds') ? Icons.school :
+                              event.title.toLowerCase().contains('examen') ? Icons.school :
+                              event.title.toLowerCase().contains('rattrapage') ? Icons.school :
+                              event.title.toLowerCase().contains('réunion') ? Icons.people :
+                              event.title.toLowerCase().contains('révisions') ? Icons.content_paste :
+                              Icons.event,
+                            ),
+                            Text(eventDescriptions[6])
+                          ],
+                        )
+                      ],
+                    ),
+                  ],
+                ),
+              onTap: () => onEventSelected(event),
+          )));
         },
       );
     }
