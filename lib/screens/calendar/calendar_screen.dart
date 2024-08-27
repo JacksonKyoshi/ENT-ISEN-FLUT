@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import '../../services/api_service.dart';
 import '../../services/token_service.dart';
 import '../../widgets/day_view.dart';
@@ -120,82 +121,85 @@ class _CalendarScreenState extends State<CalendarScreen> {
       body: FutureBuilder<List<CalendarEvent>>(
         future: _calendarFuture,
         builder: (context, snapshot) {
+          Widget aboveDatePicker;
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            aboveDatePicker = const Center(child:SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
           } else if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
+            aboveDatePicker = Center(child: Text('Error: ${snapshot.error}'));
           } else {
-            List<CalendarEvent> events = snapshot.data ?? [];
+          List<CalendarEvent> events = snapshot.data ?? [];
 
-            return Column(
-              children: <Widget>[
-                const Padding(padding: EdgeInsets.symmetric(vertical: 5.0)),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: onPreviousWeek,
-                    ),
-                    Expanded(
-                      child: WeekView(
-                        onDaySelected: onDaySelected,
-                        selectedDay: selectedDay,
-                      ),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.arrow_forward),
-                      onPressed: onNextWeek,
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: onToday,
-                      //button + text + icon
-                      child: const Row(
-                        children: [
-                          Icon(Icons.today),
-                          Text(
-                            '  Aujourd\'hui',
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: onSelectDay,
-                      //button + text + icon
-                      child: const Row(
-                        children: [
-                          Icon(Icons.calendar_month),
-                          Text(
-                            '  Choisir une date',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Expanded(
-                  flex:
-                      2, // Increase this value to give more space to the day view
-                  child: DayView(
-                    date: selectedDay,
-                    onEventSelected: onEventSelected,
-                    events: events,
-                  ),
-                ),
-                if (selectedEvent != null)
-                  Container(
-                    constraints:
-                        const BoxConstraints(maxHeight: 300), // Set a maximum height
-                    child: EventDetailView(event: selectedEvent!),
-                  ),
-              ],
+          aboveDatePicker = DayView(
+              date: selectedDay,
+              onEventSelected: onEventSelected,
+              events: events,
             );
           }
+
+          return Column(
+            children: <Widget>[
+              Expanded(
+                  flex:
+                  2, // Increase this value to give more space to the day view
+                  child: aboveDatePicker
+              ),
+              if (selectedEvent != null)
+                Container(
+                  constraints:
+                      const BoxConstraints(maxHeight: 300), // Set a maximum height
+                  child: EventDetailView(event: selectedEvent!),
+                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  ElevatedButton(
+                    onPressed: onToday,
+                    //button + text + icon
+                    child: const Row(
+                      children: [
+                        Icon(Icons.today),
+                        Text(
+                          '  Aujourd\'hui',
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: onSelectDay,
+                    //button + text + icon
+                    child: const Row(
+                      children: [
+                        Icon(Icons.calendar_month),
+                        Text(
+                          '  Choisir une date',
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: onPreviousWeek,
+                  ),
+                  Expanded(
+                    child: Text(
+                      "${DateFormat("E dd MMM yyyy", "fr-FR").format(selectedDay)}",
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodyLarge
+                    )
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: onNextWeek,
+                  ),
+                ],
+              ),
+            ],
+          );
         },
       ),
     );
