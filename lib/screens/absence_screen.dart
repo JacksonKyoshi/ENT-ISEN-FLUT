@@ -47,10 +47,71 @@ class _AbsenceViewState extends State<AbsenceView> {
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     Absence absence = snapshot.data![index];
-                    return ListTile(
-                      title: Text('Date: ${absence.date}'),
-                      subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
-                      trailing: const Icon(Icons.arrow_forward),
+                    return Container(
+                      decoration: BoxDecoration(
+                        border: Border(top: BorderSide(), bottom: BorderSide())
+                      ),
+                      child: ListTile(
+                          subtitle: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Container(
+                                width: MediaQuery.of(context).size.width/3.5,
+                                child: Column(
+                                  children: [
+                                    Icon(
+                                        Icons.description,
+                                        size: 48,
+                                        color: absence.reason.contains("justifiée") ? Colors.green :
+                                        absence.reason.contains("non excusée") ? Colors.red :
+                                        Colors.lightGreen
+                                    ),
+                                    const Text("Absence"),
+                                    Text(
+                                        absence.reason.replaceAll("Absence ", ""),
+                                        style: TextStyle(
+                                            color: absence.reason.contains("justifiée") ? Colors.green :
+                                            absence.reason.contains("non excusée") ? Colors.red :
+                                            Colors.lightGreen,
+                                            fontSize: 16
+                                        )
+                                    )
+                                  ],
+                                )
+                              ),
+                              Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                      children: [
+                                        Icon(Icons.calendar_month),
+                                        Text(absence.date)
+                                      ]
+                                  ),
+                                  Row(
+                                      children: [
+                                        Icon(Icons.timer),
+                                        Text(absence.hours)
+                                      ]
+                                  ),
+                                  Row(
+                                      children: [
+                                        Icon(Icons.person),
+                                        Text(absence.teachers.join(", "))
+                                      ]
+                                  ),
+                                  Row(
+                                      children: [
+                                        Icon(Icons.subject),
+                                        Text(absence.subject)
+                                      ]
+                                  ),
+                                ],
+                              ))
+                            ],
+                          )
+                      )
                     );
                   },
                 );
