@@ -51,6 +51,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       initialDate: selectedDay,
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2030),
+      locale: const Locale("fr", "FR")
     );
     if (picked != null && picked != selectedDay) {
       setState(() {
@@ -152,44 +153,18 @@ class _CalendarScreenState extends State<CalendarScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  ElevatedButton(
-                    onPressed: onToday,
-                    //button + text + icon
-                    child: const Row(
-                      children: [
-                        Icon(Icons.today),
-                        Text(
-                          '  Aujourd\'hui',
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: onSelectDay,
-                    //button + text + icon
-                    child: const Row(
-                      children: [
-                        Icon(Icons.calendar_month),
-                        Text(
-                          '  Choisir une date',
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
                   IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: onPreviousWeek,
                   ),
                   Expanded(
-                    child: Text(
+                    child: TextButton(
+                      onPressed: onSelectDay,
+                      child: Text(
                       "${DateFormat("E dd MMM yyyy", "fr-FR").format(selectedDay)}",
                       textAlign: TextAlign.center,
                       style: Theme.of(context).textTheme.bodyLarge
+                      )
                     )
                   ),
                   IconButton(
