@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+
 class Absence {
   final String date;
   final String reason;
@@ -19,13 +21,13 @@ class Absence {
 
   factory Absence.fromJson(Map<String, dynamic> json) {
     return Absence(
-      date: json['Date'] as String? ?? '',
-      reason: json['Reason'] as String? ?? '',
-      duration: json['Duration'] as String? ?? '',
-      hours: json['Hours'] as String? ?? '',
-      course: json['Course'] as String? ?? '',
-      teachers: List<String>.from(json['Teachers'] as List<dynamic>? ?? []),
-      subject: json['Subject'] as String? ?? '',
+      date: json['date'] as String? ?? '',
+      reason: json['reason'] as String? ?? '',
+      duration: json['duration'] as String? ?? '',
+      hours: json['hours'] as String? ?? '',
+      course: json['course'] as String? ?? '',
+      teachers: List<String>.from(json['teachers'] as List<dynamic>? ?? []),
+      subject: json['subject'] as String? ?? '',
     );
   }
 
