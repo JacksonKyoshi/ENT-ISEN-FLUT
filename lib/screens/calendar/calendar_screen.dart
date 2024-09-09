@@ -124,7 +124,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
         builder: (context, snapshot) {
           Widget aboveDatePicker;
           if (snapshot.connectionState == ConnectionState.waiting) {
-            aboveDatePicker = const Center(child:SizedBox(width: 50, height: 50, child: CircularProgressIndicator()));
+            aboveDatePicker = const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: 50, height: 50,
+                        child: CircularProgressIndicator()
+                      ),
+                      SizedBox(height: 10),
+                      Text("Chargement du planning de la journée", textAlign: TextAlign.center),
+                      SizedBox(height: 5),
+                      Text("La première requête peut prendre plus de temps que les autres", textAlign: TextAlign.center)
+                    ]
+                );
           } else if (snapshot.hasError) {
             aboveDatePicker = Center(child: Text('Error: ${snapshot.error}'));
           } else {
