@@ -113,7 +113,15 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void onEventSelected(CalendarEvent event) {
     setState(() {
       selectedEvent = event;
-    });
+      showModalBottomSheet(
+          isScrollControlled: true,
+          useRootNavigator: true,
+          constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width, maxHeight: MediaQuery.of(context).size.height/1.5),
+          context: context,
+          builder: (BuildContext context) {
+            return EventDetailView(event: event);
+          });
+      });
   }
 
   @override
@@ -157,12 +165,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   2, // Increase this value to give more space to the day view
                   child: aboveDatePicker
               ),
-              if (selectedEvent != null)
-                Container(
-                  constraints:
-                      const BoxConstraints(maxHeight: 300), // Set a maximum height
-                  child: EventDetailView(event: selectedEvent!),
-                ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[

@@ -1,12 +1,13 @@
 // services/api_service.dart
-import 'package:ent/model/calendar_event.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../model/notation.dart';
 import '../model/absences.dart';
 import '../model/notation_class.dart';
-
+import '../model/calendar_event.dart';
+import '../model/calendar_event_details.dart';
 
 class ApiService {
   final String baseUrl;
@@ -78,6 +79,21 @@ class ApiService {
       return calendarEvents;
     } else {
       throw Exception('Failed to load calendar');
+    }
+  }
+
+  Future<CalendarEventDetails> fetchCalendarEventDetails(String token, String id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/v1/agenda/event/$id'),
+      headers: {'Token': token},
+    );
+
+    if (response.statusCode == 200) {
+      dynamic eventDetailsJson = json.decode(response.body);
+      CalendarEventDetails eventDetails = CalendarEventDetails.fromJSON(eventDetailsJson);
+      return eventDetails;
+    } else {
+      throw Exception('Failed to load calendar event');
     }
   }
 }
