@@ -141,9 +141,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         child: CircularProgressIndicator()
                       ),
                       SizedBox(height: 10),
-                      Text("Chargement du planning de la journée", textAlign: TextAlign.center),
+                      Text(
+                          "Chargement du planning de la journée",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 20
+                          )
+                      ),
                       SizedBox(height: 5),
-                      Text("La première requête peut prendre plus de temps que les autres", textAlign: TextAlign.center)
+                      Text(
+                          "La première requête peut prendre plus de temps que les autres",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic
+                          )
+                      )
                     ]
                 );
           } else if (snapshot.hasError) {
