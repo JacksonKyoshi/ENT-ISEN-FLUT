@@ -124,6 +124,15 @@ class _EventDetailState extends State<EventDetailView> {
         } else {
           CalendarEventDetails eventDetails = snapshot.data!;
 
+          // this should mean there is no information loaded
+          if (eventDetails.subject.isEmpty && eventDetails.rooms.isEmpty) {
+            return Center(
+              child: Text(
+                  "Aucune information trouvée sur l'événement",
+                  style: Theme.of(context).textTheme.bodyLarge
+              )
+            );
+          } // else
           return Column(
               children: [
                 SizedBox(

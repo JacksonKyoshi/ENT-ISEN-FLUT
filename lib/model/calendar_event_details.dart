@@ -40,7 +40,7 @@ class CalendarEventDetails {
         subject: json['subject'] as String? ?? '',
         type: json['type'] as String? ?? '',
         description: json['description'] as String? ?? '',
-        isPaper: json['isPaper'],
+        isPaper: json['isPaper'] as bool? ?? false,
         rooms: List<String>.from(json['rooms'] as List<dynamic>? ?? []),
         teachers: List<String>.from(json['teachers'] as List<dynamic>? ?? []),
         students: List<String>.from(json['students'] as List<dynamic>? ?? []),
