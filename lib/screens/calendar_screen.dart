@@ -51,6 +51,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       initialDate: selectedDay,
       firstDate: DateTime(2015, 8),
       lastDate: DateTime(2030),
+      selectableDayPredicate: (DateTime time) => time.weekday != DateTime.sunday,
       locale: const Locale("fr", "FR")
     );
     if (picked != null && picked != selectedDay) {
@@ -77,6 +78,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } else {
       setState(() {
         selectedDay = selectedDay.subtract(const Duration(days: 1));
+        if (selectedDay.weekday == DateTime.sunday) {
+          selectedDay = selectedDay.subtract(const Duration(days: 1));
+        }
         updateCalendarEvents();
       });
     }
@@ -91,6 +95,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     } else {
       setState(() {
         selectedDay = selectedDay.add(const Duration(days: 1));
+        if (selectedDay.weekday == DateTime.sunday) {
+          selectedDay = selectedDay.add(const Duration(days: 1));
+        }
         updateCalendarEvents();
       });
     }
