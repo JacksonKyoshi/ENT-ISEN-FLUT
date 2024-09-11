@@ -1,4 +1,4 @@
-import 'package:ent/screens/calendar/calendar_screen.dart';
+import 'package:ent/screens/calendar_screen.dart';
 import 'package:ent/screens/home_screen.dart';
 import 'package:ent/screens/absence_screen.dart';
 import 'package:ent/screens/notes/note_screen.dart';

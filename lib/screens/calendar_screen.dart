@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../../services/api_service.dart';
-import '../../services/token_service.dart';
-import '../../widgets/day_view.dart';
-import '../../widgets/event_detail.dart';
-import '../../widgets/week_view.dart';
-import '../../model/calendar_event.dart';
+import '../services/api_service.dart';
+import '../services/token_service.dart';
+import '../widgets/day_view.dart';
+import '../widgets/event_detail.dart';
+import '../widgets/week_view.dart';
+import '../model/calendar_event.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
