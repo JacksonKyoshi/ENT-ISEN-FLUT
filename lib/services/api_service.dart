@@ -21,9 +21,8 @@ class ApiService {
     if (response.statusCode == 200) {
       List<dynamic> notationsJson = json.decode(response.body);
       List<Notation> notations = notationsJson
-          .map((json) => Notation.fromJson(json))
+          .map((json) => Notation.fromJson(json as Map<String, dynamic>))
           .toList();
-
       return notations;
     } else {
       throw Exception('Failed to load notations');

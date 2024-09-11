@@ -52,6 +52,7 @@ class _NotesScreenState extends State<NotesScreen> {
         ),
       ),
     );
+
   }
 
   void _showEditDialog(BuildContext context, String code) {
