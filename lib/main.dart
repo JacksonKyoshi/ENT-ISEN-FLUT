@@ -21,7 +21,9 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'ENT ISEN Toulon',
         localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
         ],
         supportedLocales: const [
           Locale("fr")
