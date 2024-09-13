@@ -63,50 +63,55 @@ class DayView extends StatelessWidget {
                       ]
                     ),
                     VerticalDivider(color: Colors.purple, thickness: 4),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.subject, size: 26),
-                            Text(
-                              eventDescriptions[2],
-                              style: Theme.of(context).textTheme.titleMedium
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Icon(Icons.person),
-                            Text('${eventDescriptions[3]} ${eventDescriptions[4]}')
-                          ],
-                        ),
-                        eventDescriptions[5] != "" ? Row(
-                          children: <Widget>[
-                            Icon(Icons.location_on),
-                            Text(eventDescriptions[5])
-                          ],
-                        ) : Container(),
-                        Row(
-                          children: <Widget>[
-                            Icon(
-                              event.title.toLowerCase().contains('projet') ? Icons.bar_chart :
-                              event.title.toLowerCase().contains('travaux dirigés') ? Icons.calculate :
-                              event.title.toLowerCase().contains('travaux pratiques') ? Icons.memory :
-                              event.title.toLowerCase().contains('cours magistral') ? Icons.mic :
-                              event.title.toLowerCase().contains('ds') ? Icons.school :
-                              event.title.toLowerCase().contains('examen') ? Icons.school :
-                              event.title.toLowerCase().contains('rattrapage') ? Icons.school :
-                              event.title.toLowerCase().contains('réunion') ? Icons.people :
-                              event.title.toLowerCase().contains('révisions') ? Icons.content_paste :
-                              Icons.event,
-                            ),
-                            Text(eventDescriptions[6])
-                          ],
-                        )
-                      ],
-                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.subject, size: 26),
+                              Expanded(
+                                child: Text(
+                                  eventDescriptions[2],
+                                  overflow: TextOverflow.fade,
+                                  style: Theme.of(context).textTheme.titleMedium
+                                )
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.person),
+                              Text('${eventDescriptions[3]} ${eventDescriptions[4]}')
+                            ],
+                          ),
+                          eventDescriptions[5] != "" ? Row(
+                            children: <Widget>[
+                              Icon(Icons.location_on),
+                              Text(eventDescriptions[5])
+                            ],
+                          ) : Container(),
+                          Row(
+                            children: <Widget>[
+                              Icon(
+                                event.title.toLowerCase().contains('projet') ? Icons.bar_chart :
+                                event.title.toLowerCase().contains('travaux dirigés') ? Icons.calculate :
+                                event.title.toLowerCase().contains('travaux pratiques') ? Icons.memory :
+                                event.title.toLowerCase().contains('cours magistral') ? Icons.mic :
+                                event.title.toLowerCase().contains('ds') ? Icons.school :
+                                event.title.toLowerCase().contains('examen') ? Icons.school :
+                                event.title.toLowerCase().contains('rattrapage') ? Icons.school :
+                                event.title.toLowerCase().contains('réunion') ? Icons.people :
+                                event.title.toLowerCase().contains('révisions') ? Icons.content_paste :
+                                Icons.event,
+                              ),
+                              Text(eventDescriptions[6])
+                            ],
+                          )
+                        ],
+                      ),
+                    )
                   ],
                 ),
               onTap: () => onEventSelected(event),

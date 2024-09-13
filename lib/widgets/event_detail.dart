@@ -154,10 +154,15 @@ class _EventDetailState extends State<EventDetailView> {
                                           fontSize: 20
                                         )
                                     ),
-                                    Text(
-                                        eventDetails.subject,
-                                        style: const TextStyle(
-                                            fontSize: 20
+                                    Expanded(
+                                        child: Align(
+                                          alignment: Alignment.bottomLeft,
+                                          child: Text(
+                                              eventDetails.subject,
+                                              style: const TextStyle(
+                                                  fontSize: 20
+                                              )
+                                          )
                                         )
                                     )
                                   ],
