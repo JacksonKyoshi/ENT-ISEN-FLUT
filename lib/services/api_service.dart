@@ -17,12 +17,14 @@ class ApiService {
       Uri.parse('$baseUrl/v1/notations'),
       headers: {'Token': token},
     );
-
     if (response.statusCode == 200) {
       List<dynamic> notationsJson = json.decode(response.body);
       List<Notation> notations = notationsJson
           .map((json) => Notation.fromJson(json as Map<String, dynamic>))
           .toList();
+      for(int i = 0;i<notations.length;i++){
+      notations[i].date = notations[i].date.substring(0, 5);
+      }
       return notations;
     } else {
       throw Exception('Failed to load notations');
@@ -40,6 +42,7 @@ class ApiService {
       List<NotationClass> notationsClass = notationsJson
           .map((json) => NotationClass.fromJson(json))
           .toList();
+
       return notationsClass;
     } else {
       throw Exception('Failed to load notations');
