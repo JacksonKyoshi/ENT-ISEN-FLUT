@@ -17,7 +17,6 @@ class _AbsenceViewState extends State<AbsenceView> {
 
   late Future<List<Absence>> _absenceFuture;
 
-
   @override
   void initState() {
     super.initState();
@@ -38,84 +37,86 @@ class _AbsenceViewState extends State<AbsenceView> {
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              if (snapshot.data!.isEmpty) {
-                return const Center(
-                  child: Text('Aucune absences', style: TextStyle(fontSize: 20)),
-                );
-              } else {
-                return ListView.builder(
-                  itemCount: snapshot.data!.length,
-                  itemBuilder: (context, index) {
-                    Absence absence = snapshot.data![index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        border: Border(top: BorderSide(), bottom: BorderSide())
-                      ),
-                      child: ListTile(
-                          subtitle: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width/3.5,
-                                child: Column(
-                                  children: [
-                                    Icon(
-                                        Icons.description,
-                                        size: 48,
-                                        color: absence.reason.contains("justifiée") ? Colors.green :
-                                        absence.reason.contains("non excusée") ? Colors.red :
-                                        Colors.lightGreen
-                                    ),
-                                    const Text("Absence"),
-                                    Text(
-                                        absence.reason.replaceAll("Absence ", ""),
-                                        style: TextStyle(
-                                            color: absence.reason.contains("justifiée") ? Colors.green :
-                                            absence.reason.contains("non excusée") ? Colors.red :
-                                            Colors.lightGreen,
-                                            fontSize: 16
-                                        )
-                                    )
-                                  ],
-                                )
-                              ),
-                              Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                      children: [
-                                        Icon(Icons.calendar_month),
-                                        Text(absence.date)
-                                      ]
-                                  ),
-                                  Row(
-                                      children: [
-                                        Icon(Icons.timer),
-                                        Text(absence.hours)
-                                      ]
-                                  ),
-                                  Row(
-                                      children: [
-                                        Icon(Icons.person),
-                                        Text(absence.teachers.join(", "))
-                                      ]
-                                  ),
-                                  Row(
-                                      children: [
-                                        Icon(Icons.subject),
-                                        Text(absence.subject)
-                                      ]
-                                  ),
-                                ],
-                              ))
-                            ],
-                          )
-                      )
-                    );
-                  },
+              final List<Absence> absences = snapshot.data!;
+
+              if (absences.isEmpty) {
+                return Center(
+                  child: Text("Aucune absence enregistrée", style: Theme.of(context).textTheme.bodyLarge)
                 );
               }
+
+              return ListView.builder(
+                itemCount: absences.length,
+                itemBuilder: (context, index) {
+                  Absence absence = absences[index];
+                  return Container(
+                    decoration: const BoxDecoration(
+                      border: Border(top: BorderSide(), bottom: BorderSide())
+                    ),
+                    child: ListTile(
+                        subtitle: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width/3.5,
+                              child: Column(
+                                children: [
+                                  Icon(
+                                      Icons.description,
+                                      size: 48,
+                                      color: absence.reason.contains("justifiée") ? Colors.green :
+                                      absence.reason.contains("non excusée") ? Colors.red :
+                                      Colors.lightGreen
+                                  ),
+                                  const Text("Absence"),
+                                  Text(
+                                      absence.reason.replaceAll("Absence ", ""),
+                                      style: TextStyle(
+                                          color: absence.reason.contains("justifiée") ? Colors.green :
+                                          absence.reason.contains("non excusée") ? Colors.red :
+                                          Colors.lightGreen,
+                                          fontSize: 16
+                                      )
+                                  )
+                                ],
+                              )
+                            ),
+                            Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                    children: [
+                                      Icon(Icons.calendar_month),
+                                      Text(absence.date)
+                                    ]
+                                ),
+                                Row(
+                                    children: [
+                                      Icon(Icons.timer),
+                                      Text(absence.hours)
+                                    ]
+                                ),
+                                Row(
+                                    children: [
+                                      Icon(Icons.person),
+                                      Text(absence.teachers.join(", "))
+                                    ]
+                                ),
+                                Row(
+                                    children: [
+                                      Icon(Icons.subject),
+                                      Text(absence.subject)
+                                    ]
+                                ),
+                              ],
+                            ))
+                          ],
+                        )
+                    )
+                  );
+                },
+              );
             }
           },
         ),

@@ -1,5 +1,3 @@
-import 'package:flutter/cupertino.dart';
-
 class Absence {
   final String date;
   final String reason;
