@@ -212,13 +212,19 @@ class _EventDetailState extends State<EventDetailView> {
                   ],
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(Icons.location_on),
-                    Expanded(child: Text(eventDetails.rooms.join(", ")))
-                  ],
+                Visibility(
+                  visible: eventDetails.rooms.isNotEmpty,
+                  child: Row(
+                    children: [
+                      Icon(Icons.location_on),
+                      Expanded(child: Text(eventDetails.rooms.join(", ")))
+                    ],
+                  )
                 ),
-                const SizedBox(height: 5),
+                Visibility(
+                  visible: eventDetails.rooms.isNotEmpty,
+                  child: const SizedBox(height: 5)
+                ),
                 Visibility(
                   visible: eventDetails.courseName.isNotEmpty,
                   child: Row(
