@@ -27,6 +27,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   void initState() {
     super.initState();
     selectedDay = DateTime.now(); // Set selectedDay to the current day
+    if (selectedDay.weekday == DateTime.sunday) {
+      selectedDay = selectedDay.add(const Duration(days: 1));
+    }
     updateCalendarEvents();
   }
 
