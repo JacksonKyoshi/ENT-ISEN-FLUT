@@ -62,7 +62,7 @@ class DayView extends StatelessWidget {
                         ),
                       ]
                     ),
-                    VerticalDivider(color: Colors.purple, thickness: 4),
+                    const VerticalDivider(color: Colors.purple, thickness: 4),
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -80,18 +80,25 @@ class DayView extends StatelessWidget {
                               )
                             ],
                           ),
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.person),
-                              Text('${eventDescriptions[3]} ${eventDescriptions[4]}')
-                            ],
+
+                          Visibility(
+                            visible: eventDescriptions[3].isNotEmpty && eventDescriptions[4].isNotEmpty,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.person),
+                                Text('${eventDescriptions[3]} ${eventDescriptions[4]}')
+                              ],
+                            )
                           ),
-                          eventDescriptions[5] != "" ? Row(
-                            children: <Widget>[
-                              Icon(Icons.location_on),
-                              Text(eventDescriptions[5])
-                            ],
-                          ) : Container(),
+                          Visibility(
+                            visible: eventDescriptions[5].isNotEmpty,
+                            child: Row(
+                              children: <Widget>[
+                                Icon(Icons.location_on),
+                                Text(eventDescriptions[5])
+                              ],
+                            )
+                          ),
                           Row(
                             children: <Widget>[
                               Icon(

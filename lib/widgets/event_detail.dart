@@ -173,14 +173,19 @@ class _EventDetailState extends State<EventDetailView> {
                   )
                 ),
                 const SizedBox(height: 10),
-                if (eventDetails.description.isNotEmpty)
-                  Row(
+                Visibility(
+                  visible: eventDetails.description.isNotEmpty,
+                  child: Row(
                     children: [
                       Icon(Icons.comment),
                       Text(eventDetails.description)
                     ],
-                  ),
-                const SizedBox(height: 5),
+                  )
+                ),
+                Visibility(
+                  visible: eventDetails.description.isNotEmpty,
+                  child: const SizedBox(height: 5),
+                ),
                 Row(
                   children: [
                     Icon(
@@ -206,18 +211,27 @@ class _EventDetailState extends State<EventDetailView> {
                   ],
                 ),
                 const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(Icons.subject),
-                    Text(eventDetails.courseName)
-                  ],
+                Visibility(
+                  visible: eventDetails.courseName.isNotEmpty,
+                  child: Row(
+                    children: [
+                      Icon(Icons.subject),
+                      Text(eventDetails.courseName)
+                    ],
+                  )
                 ),
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(Icons.view_module),
-                    Text(eventDetails.module)
-                  ],
+                Visibility(
+                  visible: eventDetails.courseName.isNotEmpty,
+                  child: const SizedBox(height: 5),
+                ),
+                Visibility(
+                  visible: eventDetails.module.isNotEmpty,
+                  child: Row(
+                    children: [
+                      Icon(Icons.view_module),
+                      Text(eventDetails.module)
+                    ],
+                  )
                 ),
                 const SizedBox(height: 10),
                 Expanded(
