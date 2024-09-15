@@ -25,15 +25,23 @@ class _EventDetailMenuState extends State<EventDetailMenu> with TickerProviderSt
   void initState() {
     super.initState();
     _screensList = <Widget>[
-      ListView(
-          children: _buildDetailsList(widget.eventDetails.teachers, const Icon(Icons.person_pin))
-      ),
-      ListView(
-          children: _buildDetailsList(widget.eventDetails.students, const Icon(Icons.person))
-      ),
-      ListView(
-          children: _buildDetailsList(widget.eventDetails.groups, const Icon(Icons.groups))
-      )
+      widget.eventDetails.teachers.isEmpty ?
+        const Center(child: Text("Aucun professeur trouvé")) :
+        ListView(
+            children: _buildDetailsList(widget.eventDetails.teachers, const Icon(Icons.person_pin))
+        )
+      ,
+      widget.eventDetails.students.isEmpty ?
+        const Center(child: Text("Aucun étudiant trouvé")) :
+        ListView(
+            children: _buildDetailsList(widget.eventDetails.students, const Icon(Icons.person))
+        )
+      ,
+      widget.eventDetails.groups.isEmpty ?
+        const Center(child: Text("Aucun groupe trouvé")) :
+        ListView(
+            children: _buildDetailsList(widget.eventDetails.groups, const Icon(Icons.groups))
+        )
     ];
     _tabController = TabController(length: _screensList.length, vsync: this);
   }
