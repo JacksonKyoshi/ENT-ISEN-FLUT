@@ -178,7 +178,7 @@ class _EventDetailState extends State<EventDetailView> {
                   child: Row(
                     children: [
                       Icon(Icons.comment),
-                      Text(eventDetails.description)
+                      Expanded(child: Text(eventDetails.description))
                     ],
                   )
                 ),
@@ -207,7 +207,7 @@ class _EventDetailState extends State<EventDetailView> {
                 Row(
                   children: [
                     Icon(Icons.location_on),
-                    Text(eventDetails.rooms.join(", "))
+                    Expanded(child: Text(eventDetails.rooms.join(", ")))
                   ],
                 ),
                 const SizedBox(height: 5),
@@ -216,7 +216,7 @@ class _EventDetailState extends State<EventDetailView> {
                   child: Row(
                     children: [
                       Icon(Icons.subject),
-                      Text(eventDetails.courseName)
+                      Expanded(child: Text(eventDetails.courseName))
                     ],
                   )
                 ),
@@ -229,7 +229,7 @@ class _EventDetailState extends State<EventDetailView> {
                   child: Row(
                     children: [
                       Icon(Icons.view_module),
-                      Text(eventDetails.module)
+                      Expanded(child: Text(eventDetails.module))
                     ],
                   )
                 ),
