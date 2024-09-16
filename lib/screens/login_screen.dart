@@ -301,6 +301,7 @@ class _LoginPageState extends State<LoginScreen> {
             onPressed: () {
               // TODO: add Mentions légales screen
               debugPrint("Mentions légales pressed");
+
             },
             child: const Text(
               "Mentions légales",
