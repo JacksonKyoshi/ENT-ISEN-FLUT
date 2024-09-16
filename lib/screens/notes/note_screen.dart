@@ -1,3 +1,4 @@
+import 'package:ent/widgets/custom_card_list.dart';
 import 'package:flutter/material.dart';
 import '../../model/notation.dart';
 import '../../services/api_service.dart';
@@ -51,82 +52,16 @@ class _NotesScreenState extends State<NotesScreen> {
             return ListView.builder(
               padding: EdgeInsets.all(8.0),
               shrinkWrap: true, // Réduit la taille de ListView à son contenu
-              physics: NeverScrollableScrollPhysics(), // Désactive le défilement interne si ce n'est pas nécessaire
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 Notation notation = snapshot.data![index];
-                return GestureDetector(
-                  onTap: () => _showEditDialog(context, notation.code),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6.0),
-                    child: Container(
-                      padding: EdgeInsets.all(16.0),
-                      margin: EdgeInsets.symmetric(horizontal: 8.0),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded( // Ajout de Expanded pour ajuster dynamiquement la largeur
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                        vertical: 8.0, horizontal: 12.0),
-                                        decoration: BoxDecoration(
-                                        color: Colors.grey[200],
-                                        borderRadius: BorderRadius.circular(4.0),
-                                  ),
-                                  child: Text(
-                                    notation.date,
-                                    style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black),
-                                  ),
-                                ),
-                                SizedBox(width: 12.0),
-                                Expanded( // Ajout de Expanded pour ajuster dynamiquement la largeur
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      AutoSizeText(
-                                        notation.name,
 
-                                        style: TextStyle(fontSize: 20.0,fontWeight:FontWeight.bold),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                      Text(
-                                        '${notation.comments}',
-                                        style: TextStyle(
-                                            fontSize: 14.0, color: Colors.grey[700]),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          Text(
-                            notation.note,
-                            style: TextStyle(
-                                fontSize: 24.0, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                return CustomCardList(
+                    onTap: () => _showEditDialog(context, notation.code),
+                    leadingText: notation.date,
+                    titleText: notation.name,
+                    subtitleText: notation.comments,
+                    trailingText: notation.note
                 );
               },
             );
