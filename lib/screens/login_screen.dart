@@ -24,6 +24,7 @@ void fetchJson(String username, String password, BuildContext context, TextEditi
     body: jsonData,
   );
 
+
   if (response.statusCode == 200) {
     TokenManager.getInstance().setToken(response.body);
     UserManager.getInstance().setUsername(username);
