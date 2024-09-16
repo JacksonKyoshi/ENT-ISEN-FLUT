@@ -7,9 +7,9 @@ import 'package:path_provider/path_provider.dart';
 import '../main.dart';
 import '../services/User_service.dart';
 import '../services/token_service.dart';
-import '../services/Cache.dart';
+import '../services/cache.dart';
 
-void fetchJson(String username, String password, BuildContext context) async {
+void fetchJson(String username, String password, BuildContext context, TextEditingController usernameController, TextEditingController passwordController, bool remindOfMe) async {
   // Faire la requête
   const url = 'https://api-ent.isenengineering.fr/v1/token';
 
@@ -18,7 +18,6 @@ void fetchJson(String username, String password, BuildContext context) async {
     'password': password,
   };
   final jsonData = json.encode(data);
-  debugPrint("data : $jsonData");
   final response = await http.post(
     Uri.parse(url),
     headers: {'Content-Type': 'application/json'},
@@ -29,12 +28,18 @@ void fetchJson(String username, String password, BuildContext context) async {
     TokenManager.getInstance().setToken(response.body);
     UserManager.getInstance().setUsername(username);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MyApp()),
-    );
+    if (context.mounted) { // Vérifiez si le widget est monté avant de naviguer
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => MyApp()),
+      );
+    }
   } else {
     debugPrint('Erreur lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
+
+    usernameController.text = username;
+    passwordController.text = password;
+
     showDialog(
       context: context,
       builder: (context) {
@@ -54,6 +59,7 @@ void fetchJson(String username, String password, BuildContext context) async {
     );
   }
 }
+
 
 
 
@@ -85,29 +91,31 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginScreen> {
+
+
+
   @override
   void initState() {
     super.initState();
 
-    // Lecture du cache
-    readFromCache('cacheIsenFlut.txt').then((content) {
+    readFromCache('cacheloginIsenFlut.txt').then((content) {
       if (content != null) {
-        debugPrint('\n\n\n\n\n\n\n\nContenu lu du cache : $content\n\n\n\n');
         Map<String, dynamic> jsonMap = json.decode(content);
         String username = jsonMap['username'];
         String password = jsonMap['password'];
-        fetchJson(username, password, context);
-      } else {
-        debugPrint('Aucun contenu trouvé.');
+        setState(() {
+          _remindOfMe = true; // Cocher automatiquement si des infos sont dans le cache
+        });
+        fetchJson(username, password, context, _usernameController, _passwordController, _remindOfMe);
       }
     });
   }
-
+  bool _isPasswordHidden = true;
+  bool _remindOfMe = false;
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
-  bool _isPasswordHidden = true;
-  bool _remindOfMe = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -202,16 +210,6 @@ class _LoginPageState extends State<LoginScreen> {
                                 onChanged: (changedState) {
                                   setState(() {
                                     _remindOfMe = changedState!;
-                                    if (_remindOfMe) {
-                                      // Écrire dans le cache
-                                      String username = _usernameController.text;
-                                      String password = _passwordController.text;
-                                      final data = json.encode({
-                                        'username': username,
-                                        'password': password,
-                                      });
-                                      writeToCache('cacheIsenFlut.txt', data);
-                                    }
                                   });
                                 },
                               ),
@@ -223,53 +221,18 @@ class _LoginPageState extends State<LoginScreen> {
                             String username = _usernameController.text;
                             String password = _passwordController.text;
 
-                            final Map<String, String> data = {
-                              'username': username,
-                              'password': password,
-                            };
-
-                            try {
+                            if (_remindOfMe) {
+                              final Map<String, String> data = {
+                                'username': username,
+                                'password': password,
+                              };
                               final jsonData = json.encode(data);
-                              if (_remindOfMe) {
-                                await writeToCache('cacheIsenFlut.txt', jsonData);
-                              }
-                              final response = await http.post(
-                                Uri.parse('https://api-ent.isenengineering.fr/v1/token'),
-                                headers: {'Content-Type': 'application/json'},
-                                body: jsonData,
-                              );
-
-                              if (response.statusCode == 200) {
-                                TokenManager.getInstance().setToken(response.body);
-                                UserManager.getInstance().setUsername(username);
-
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(builder: (context) => MyApp()),
-                                );
-                              } else {
-                                debugPrint('Erreur lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    return AlertDialog(
-                                      icon: Icon(Icons.error, color: Colors.red),
-                                      title: Text("Erreur ${response.statusCode}\n${response.reasonPhrase}"),
-                                      content: SingleChildScrollView(
-                                        child: ListBody(
-                                          children: <Widget>[
-                                            Text("Le serveur a rencontré une erreur et a renvoyé le message suivant :"),
-                                            Text(response.body),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                );
-                              }
-                            } catch (e) {
-                              debugPrint('Erreur lors de la requête: $e');
+                              await writeToCache('cacheloginIsenFlut.txt', jsonData);
+                            } else {
+                              deleteCacheFile('cacheloginIsenFlut.txt');
                             }
+
+                            fetchJson(username, password, context, _usernameController, _passwordController, _remindOfMe);
                           },
                           child: Text(
                             "Se connecter",
