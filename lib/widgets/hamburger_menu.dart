@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../screens/calendar/calendar_screen.dart';
+import '../screens/calendar_screen.dart';
 import '../screens/absence_screen.dart';
 import '../screens/notes/note_screen.dart';
 

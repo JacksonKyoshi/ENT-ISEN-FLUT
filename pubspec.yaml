@@ -30,6 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_localizations:
+    sdk: flutter
   flutter_svg: ^2.0.10+1
   url_launcher: ^6.0.12
   icalendar_parser: ^2.0.0

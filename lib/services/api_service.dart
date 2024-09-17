@@ -1,11 +1,13 @@
 // services/api_service.dart
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../model/notation.dart';
 import '../model/absences.dart';
 import '../model/notation_class.dart';
-
+import '../model/calendar_event.dart';
+import '../model/calendar_event_details.dart';
 
 class ApiService {
   final String baseUrl;
@@ -61,6 +63,36 @@ class ApiService {
       return absence;
     } else {
       throw Exception('Failed to load absences');
+    }
+  }
+
+  Future<List<CalendarEvent>> fetchCalendar(String token, DateTime start, DateTime end) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/v1/agenda?start=${start.millisecondsSinceEpoch}&end=${end.millisecondsSinceEpoch}'),
+      headers: {'Token': token},
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> calendarJson = json.decode(response.body);
+      List<CalendarEvent> calendarEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
+      return calendarEvents;
+    } else {
+      throw Exception('Failed to load calendar');
+    }
+  }
+
+  Future<CalendarEventDetails> fetchCalendarEventDetails(String token, String id) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/v1/agenda/event/$id'),
+      headers: {'Token': token},
+    );
+
+    if (response.statusCode == 200) {
+      dynamic eventDetailsJson = json.decode(response.body);
+      CalendarEventDetails eventDetails = CalendarEventDetails.fromJSON(eventDetailsJson);
+      return eventDetails;
+    } else {
+      throw Exception('Failed to load calendar event');
     }
   }
 }

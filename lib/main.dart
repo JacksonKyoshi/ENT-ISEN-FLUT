@@ -1,6 +1,7 @@
 import 'package:ent/main_handler.dart';
 import 'package:ent/services/token_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'services/calendar_service.dart';
@@ -19,6 +20,14 @@ class MyApp extends StatelessWidget {
       create: (context) => CalendarEventProvider(),
       child: MaterialApp(
         title: 'ENT ISEN Toulon',
+        localizationsDelegates: const [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate
+        ],
+        supportedLocales: const [
+          Locale("fr")
+        ],
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.purple),
           primarySwatch: Colors.purple,
