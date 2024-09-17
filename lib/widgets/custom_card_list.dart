@@ -4,19 +4,23 @@ import 'package:flutter/material.dart';
 
 class CustomCardList extends StatelessWidget {
   final Function() onTap;
+  final BoxConstraints constraints;
   final Color boxColor;
-  final String leadingText;
-  final String titleText;
-  final String subtitleText;
-  final String trailingText;
+  final Color leadingColor;
+  final Widget? leading;
+  final Widget? title;
+  final Widget? subtitle;
+  final Widget? trailing;
 
   const CustomCardList({
     super.key,
     required this.onTap,
-    required this.leadingText,
-    required this.titleText,
-    required this.subtitleText,
-    required this.trailingText,
+    required this.constraints,
+    required this.leadingColor,
+    this.leading,
+    this.title,
+    this.subtitle,
+    this.trailing,
     this.boxColor = Colors.white
   });
 
@@ -28,10 +32,12 @@ class CustomCardList extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6.0),
         child: Container(
+          constraints: constraints,
           padding: EdgeInsets.all(16.0),
           margin: EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
             color: boxColor,
+            border: Border(left: BorderSide(color: Colors.purple, width: 5)),
             borderRadius: BorderRadius.circular(8.0),
             boxShadow: [
               BoxShadow(
@@ -55,29 +61,16 @@ class CustomCardList extends StatelessWidget {
                         color: Colors.grey[200],
                         borderRadius: BorderRadius.circular(4.0),
                       ),
-                      child: Text(
-                        leadingText,
-                        style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black),
-                      ),
+                      child: leading
                     ),
                     SizedBox(width: 12.0),
                     Expanded( // Ajout de Expanded pour ajuster dynamiquement la largeur
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          AutoSizeText(
-                            titleText,
-                            style: TextStyle(fontSize: 20.0,fontWeight:FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
-                          ),
-                          Text(
-                            subtitleText,
-                            style: TextStyle(
-                                fontSize: 14.0, color: Colors.grey[700]),
+                          title ?? Container(),
+                          Expanded(
+                            child: subtitle ?? Container()
                           ),
                         ],
                       ),
@@ -85,11 +78,7 @@ class CustomCardList extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
-                trailingText,
-                style: TextStyle(
-                    fontSize: 24.0, fontWeight: FontWeight.bold),
-              ),
+              trailing ?? Container(),
             ],
           ),
         ),
