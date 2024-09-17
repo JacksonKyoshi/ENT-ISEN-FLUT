@@ -14,9 +14,6 @@ import '../widgets/hamburger_menu.dart';
 import 'dart:async';
 import '../services/ics_parser.dart';
 
-
-
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
 
@@ -25,12 +22,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
+  final ApiService apiService =
+      ApiService('https://api-ent.isenengineering.fr');
 
   late Future<List<Notation>> _notationsFuture;
   Timer? _timer;
 
-  @override
   @override
   void initState() {
     super.initState();
@@ -107,216 +104,78 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     return Scaffold(
       body: SingleChildScrollView(
-        // Add this
-        child: Center(
           child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: const Text('Dernières notes :',
-                      style: TextStyle(fontSize: 20)),
-                ),
+        children: [
+          //large text
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              child:
+                  //capitalize the first letter each word in the username
+                  Text(
+                'Bonjour ${UserManager.getInstance().getUsername().split('.')[0].split(' ').map((String word) => word[0].toUpperCase() + word.substring(1)).join(' ')}',
+                style: Theme.of(context).textTheme.headlineLarge,
+                textAlign: TextAlign.left,
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NotesScreen()),
-                  );
-                },
-                child: FutureBuilder<List<Notation>>(
-                  future: _notationsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Card(
-                        // Wrap the Container with a Card
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 30,
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              Text(snapshot.data![0].code),
-                              Text(snapshot.data![0].note.toString(),
-                                  style: const TextStyle(fontSize: 30)),
-                            ],
-                          ),
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return const CircularProgressIndicator();
-                  },
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: const Align(
-                  alignment: Alignment.topLeft,
-                  child:
-                      Text('Prochains Cours :', style: TextStyle(fontSize: 20)),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CalendarScreen()),
-                  );
-                },
-                child: Column(
-                  children: calendarEvents != null
-                      ? calendarEvents
-                          .where((event) => event.end!.isAfter(DateTime.now()))
-                          .take(2)
-                          .map((event) => Card(
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width -
-                                      30, // Set the width of the Container
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(
-                                          event.summary!.contains('PROJET')
-                                              ? Icons.bar_chart
-                                              : event.summary!.contains('TD')
-                                                  ? Icons.calculate
-                                                  : event.summary!
-                                                          .contains('TP')
-                                                      ? Icons.memory
-                                                      : event.summary!
-                                                              .contains('CM')
-                                                          ? Icons.mic
-                                                          : event.summary!
-                                                                  .contains(
-                                                                      'DS')
-                                                              ? Icons.school
-                                                              : event.summary!
-                                                                      .contains(
-                                                                          'EXAMEN')
-                                                                  ? Icons.school
-                                                                  : event.summary!
-                                                                          .contains(
-                                                                              'RATTRAPAGE')
-                                                                      ? Icons
-                                                                          .school
-                                                                      : event.summary!.contains(
-                                                                              'REUNION')
-                                                                          ? Icons
-                                                                              .people
-                                                                          : Icons
-                                                                              .event,
-                                        ),
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${DateFormat('HH:mm').format(event.start!)} - ${DateFormat('HH:mm').format(event.end!)}',
-                                              textAlign: TextAlign.left,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge,
-                                            ),
-                                            Text(
-                                              '${event.summary}',
-                                              textAlign: TextAlign.left,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
-                                            ),
-                                            //if its the frist tile display the progress bar
-                                            if (event == currentEvent)
-                                              LinearProgressIndicator(
-                                                value: calculateProgress(event),
-                                                backgroundColor:
-                                                    Colors.grey.shade400,
-                                                valueColor:
-                                                    const AlwaysStoppedAnimation<
-                                                        Color>(Colors.red),
-                                                minHeight: 10,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ))
-                          .toList()
-                      : [const CircularProgressIndicator()],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AbsenceView()),
-                  );
-                },
-                child: FutureBuilder<List<Absence>>(
-                  future: apiService.fetchAbsence(TokenManager.getInstance().getToken()),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      int totalAbsences = snapshot.data!.isEmpty
-                          ? 0
-                          : snapshot.data!
-                          .map((absence) => int.parse(absence.hours))
-                          .reduce((value, element) => value + element);
-                    }
-                    if (snapshot.hasData) {
-                      int totalAbsences = snapshot.data!.length;
-                      return Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('Total Absences: $totalAbsences H', style: TextStyle(fontSize: 20)),
-                            ),
-                          ),
-                          totalAbsences > 0
-                              ? Container(
-                            height: 200, // specify a height
-                            child: ListView.builder(
-                              itemCount: totalAbsences,
-                              itemBuilder: (context, index) {
-                                Absence absence = snapshot.data![index];
-                                return Card(
-                                  child: ListTile(
-                                    title: Text('Date: ${absence.date}'),
-                                    subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
-                                    trailing: const Icon(Icons.arrow_forward),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                              : Card(
-                            child: ListTile(
-                              title: Text('Aucune absences'),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              child: Column(
+                children: [
+                  Text(
+                    'Prochains cours :',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    textAlign: TextAlign.left,
+                  ),
+                  //place holder box
+                  Container(
+                    height: 200,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              child: Column(
+                children: [
+                  Text(
+                    'Dernières notes :',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    textAlign: TextAlign.left,
+                  ),
+                  //place holder box
+                  Container(
+                    height: 200,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            width: double.infinity,
+            child: Container(
+              child: Column(
+                children: [
+                  Text(
+                    'Dernières absences :',
+                    style: Theme.of(context).textTheme.headlineMedium,
+                    textAlign: TextAlign.left,
+                  ),
+                  //place holder box
+                  Container(
+                    height: 200,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      )),
     );
   }
 }
