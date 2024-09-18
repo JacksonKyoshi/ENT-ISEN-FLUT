@@ -31,13 +31,10 @@ class NextEvents extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
-              child: Text(
+              Text(
                 DateFormat('E, dd MMM yyyy').format(date),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
-            ),
             Container(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height/5, // Adjust the height as needed
