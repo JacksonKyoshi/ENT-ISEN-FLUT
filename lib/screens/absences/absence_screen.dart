@@ -1,8 +1,10 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import '../model/absences.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
+import '../widgets/custom_card_list.dart';
 
 
 class AbsenceView extends StatefulWidget {
@@ -172,71 +174,33 @@ class AbsenceList extends StatelessWidget {
       itemCount: absences.length,
       itemBuilder: (context, index) {
         Absence absence = absences[index];
-        return Container(
-            decoration: const BoxDecoration(
-                border: Border(top: BorderSide(), bottom: BorderSide())
+        return CustomCardList(
+            constraints: BoxConstraints(maxHeight: 100),
+            leadingColor: Colors.purple,
+            leading: Text(
+              absence.date,
+              style: TextStyle(
+                  fontSize: 14.0,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
-            child: ListTile(
-                subtitle: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                        width: MediaQuery.of(context).size.width/3.5,
-                        child: Column(
-                          children: [
-                            Icon(
-                                Icons.description,
-                                size: 48,
-                                color: absence.reason.contains("justifiée") ? Colors.green :
-                                absence.reason.contains("non excusée") ? Colors.red :
-                                Colors.lightGreen
-                            ),
-                            const Text("Absence"),
-                            Text(
-                                absence.reason.replaceAll("Absence ", ""),
-                                style: TextStyle(
-                                    color: absence.reason.contains("justifiée") ? Colors.green :
-                                    absence.reason.contains("non excusée") ? Colors.red :
-                                    Colors.lightGreen,
-                                    fontSize: 16
-                                )
-                            )
-                          ],
-                        )
-                    ),
-                    Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                                children: [
-                                  Icon(Icons.calendar_month),
-                                  Text(absence.date)
-                                ]
-                            ),
-                            Row(
-                                children: [
-                                  Icon(Icons.timer),
-                                  Text(absence.hours)
-                                ]
-                            ),
-                            Row(
-                                children: [
-                                  Icon(Icons.person),
-                                  Text(absence.teachers.join(", "))
-                                ]
-                            ),
-                            Row(
-                                children: [
-                                  Icon(Icons.subject),
-                                  Text(absence.subject)
-                                ]
-                            ),
-                          ],
-                        ))
-                  ],
-                )
-            )
+            title: AutoSizeText(
+              absence.course,
+              style: TextStyle(fontSize: 20.0,fontWeight:FontWeight.bold),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            subtitle: Text(
+              absence.teachers.join(", "),
+              style: TextStyle(
+                  fontSize: 14.0, color: Colors.grey[700]),
+            ),
+            trailing: Text(
+              absence.duration,
+              style: TextStyle(
+                  fontSize: 24.0, fontWeight: FontWeight.bold),
+            ),
+            onTap: () {  },
         );
       },
     );

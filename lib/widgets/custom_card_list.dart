@@ -37,7 +37,7 @@ class CustomCardList extends StatelessWidget {
           margin: EdgeInsets.symmetric(horizontal: 8.0),
           decoration: BoxDecoration(
             color: boxColor,
-            border: Border(left: BorderSide(color: Colors.purple, width: 5)),
+            border: Border(left: BorderSide(color: leadingColor, width: 5)),
             borderRadius: BorderRadius.circular(8.0),
             boxShadow: [
               BoxShadow(
