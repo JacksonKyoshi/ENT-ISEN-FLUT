@@ -1,3 +1,4 @@
+import 'package:ent/screens/mentions_legales_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -263,9 +264,9 @@ class _LoginPageState extends State<LoginScreen> {
           ),
           TextButton(
             onPressed: () {
-              // TODO: add Mentions légales screen
-              debugPrint("Mentions légales pressed");
-
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MentionsLegalesScreen()));
             },
             child: const Text(
               "Mentions légales",
