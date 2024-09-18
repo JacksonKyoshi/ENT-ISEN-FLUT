@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../services/api_service.dart';
+import '../services/cache.dart';
 import '../services/token_service.dart';
 import '../widgets/day_view.dart';
 import '../widgets/event_detail.dart';
@@ -23,6 +26,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   late Future<List<CalendarEvent>> _calendarFuture;
 
+  String cacheFileName = "planning.cache";
+
   @override
   void initState() {
     super.initState();
@@ -30,21 +35,67 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (selectedDay.weekday == DateTime.sunday) {
       selectedDay = selectedDay.add(const Duration(days: 1));
     }
-    updateCalendarEvents();
+    updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
+    updateCache();
   }
 
-  void updateCalendarEvents() {
-    _calendarFuture = apiService.fetchCalendar(
+  bool isToday(DateTime date) {
+    return date.isAfter(DateTime(selectedDay.year, selectedDay.month, selectedDay.day)) &&
+        date.isBefore(DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
+  }
+
+  Future<List<CalendarEvent>> retrieveDataFromCache(DateTime start, DateTime end) async {
+    String cacheValue = await readFromCache(cacheFileName) ?? "";
+    if (cacheValue.isNotEmpty) {
+      List<dynamic> calendarJson = json.decode(cacheValue);
+      List<CalendarEvent> cachedEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
+      List<CalendarEvent> filteredEvents = cachedEvents.where((event) => isToday(event.start)).toList();
+      if (filteredEvents.isNotEmpty) {
+        return filteredEvents;
+      }
+    }
+    throw RangeError.value(0);
+  }
+
+  Future<List<CalendarEvent>> updateCalendarEvents(bool forceRefresh, DateTime start, DateTime end) {
+    if (!forceRefresh) {
+      return _calendarFuture = retrieveDataFromCache(start, end).
+      catchError((err) {
+        if (err.toString().contains("RangeError")) {
+          return updateCalendarEvents(true, start, end);
+        }
+        throw err;
+      });
+    }
+    return _calendarFuture = apiService.fetchCalendar(token, start, end);
+  }
+
+  void updateCache() async {
+    String cacheValue = await readFromCache(cacheFileName) ?? "";
+    if (cacheValue.isNotEmpty) {
+      List<dynamic> calendarJson = json.decode(cacheValue);
+      List<CalendarEvent> calendarEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
+      if (isToday(calendarEvents.first.start)) {
+        return;
+      }
+    }
+    DateTime oneWeekLater = selectedDay.add(const Duration(days: 7));
+    apiService.fetchCalendar(
         token,
         DateTime(selectedDay.year, selectedDay.month, selectedDay.day),
-        DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59)
-    );
+        DateTime(oneWeekLater.year, oneWeekLater.month, oneWeekLater.day)
+    ).then((cachedEvents) => {
+      writeToCache(cacheFileName, json.encode(cachedEvents.map((el) => el.toJSON()).toList()))
+    }, onError: (err) => {
+      debugPrint("erreur lors de la récupération du cache")
+    });
+    return;
   }
 
   void onToday() {
     setState(() {
       selectedDay = DateTime.now();
-      updateCalendarEvents();
+      updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
     });
   }
 
@@ -60,7 +111,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     if (picked != null && picked != selectedDay) {
       setState(() {
         selectedDay = picked;
-        updateCalendarEvents();
+        updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
       });
     }
   }
@@ -84,7 +135,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         if (selectedDay.weekday == DateTime.sunday) {
           selectedDay = selectedDay.subtract(const Duration(days: 1));
         }
-        updateCalendarEvents();
+        updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
       });
     }
   }
@@ -101,7 +152,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         if (selectedDay.weekday == DateTime.sunday) {
           selectedDay = selectedDay.add(const Duration(days: 1));
         }
-        updateCalendarEvents();
+        updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
       });
     }
   }
@@ -116,7 +167,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       } else if (selectedDay.isAfter(DateTime(2030))) {
         selectedDay = DateTime(2030);
       }
-      updateCalendarEvents();
+      updateCalendarEvents(false, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
     });
   }
 
@@ -132,6 +183,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
             return EventDetailView(event: event);
           });
       });
+  }
+
+  Future<void> onRefresh() {
+    setState(() {
+      updateCalendarEvents(true, DateTime(selectedDay.year, selectedDay.month, selectedDay.day), DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
+    });
+
+    return _calendarFuture;
   }
 
   @override
@@ -173,10 +232,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
           } else {
           List<CalendarEvent> events = snapshot.data ?? [];
 
-          aboveDatePicker = DayView(
-              date: selectedDay,
-              onEventSelected: onEventSelected,
-              events: events,
+          aboveDatePicker = RefreshIndicator(
+              onRefresh: () => onRefresh(),
+              child: DayView(
+                date: selectedDay,
+                onEventSelected: onEventSelected,
+                events: events,
+              ),
             );
           }
 
