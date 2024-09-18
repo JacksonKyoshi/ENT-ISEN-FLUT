@@ -63,6 +63,10 @@ class NoteDetail extends StatelessWidget {
       ),
       backgroundColor: Colors.white,
       builder: (BuildContext context) {
+        double note = double.parse(notation.notePersonal);
+        double noteMax = double.parse(notation.noteMax);
+        double noteMin = double.parse(notation.noteMin);
+        double moyenne = double.parse(notation.noteAverage);
         return Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -110,21 +114,22 @@ class NoteDetail extends StatelessWidget {
                           ),
                         ],
                       ),
+
                       Text(
-                        notation.notePersonal,
+                        note.toStringAsFixed(2),
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.green,
+                          color: note<10 ? Colors.red : Colors.green,
                         ),
                       ),
                     ],
                   ),
                 ],
               ),
-              buildRowWithIcon(Icons.assessment, 'Moyenne classe :', notation.noteAverage),
-              buildRowWithIcon(Icons.trending_up, 'Note maximale :', notation.noteMax),
-              buildRowWithIcon(Icons.trending_down, 'Note minimale :', notation.noteMin),
+              buildRowWithIcon(Icons.assessment, 'Moyenne classe :', moyenne.toStringAsFixed(2)),
+              buildRowWithIcon(Icons.trending_up, 'Note maximale :', noteMax.toStringAsFixed(2)),
+              buildRowWithIcon(Icons.trending_down, 'Note minimale :', noteMin.toStringAsFixed(2)),
               buildRowWithIcon(Icons.people, "Nombre d'étudiant :", notation.presence),
 
               ],
