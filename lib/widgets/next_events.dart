@@ -32,7 +32,7 @@ class NextEvents extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
               Text(
-                DateFormat('E, dd MMM yyyy').format(date),
+                DateFormat('EEEE d MMMM', 'fr_FR').format(date),
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
             Container(
