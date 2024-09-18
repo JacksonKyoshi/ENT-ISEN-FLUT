@@ -59,10 +59,9 @@ class ApiService {
 
     if (response.statusCode == 200) {
       List<dynamic> absenceJson = json.decode(response.body);
-      List<Absence> absence = absenceJson != null
-          ? absenceJson.map((json) => Absence.fromJson(json)).toList()
-          : [];
-      absence.removeAt(0);
+      List<Absence> absence = absenceJson
+          .map((json) => Absence.fromJson(json))
+          .toList();
       return absence;
     } else {
       throw Exception('Failed to load absences');
