@@ -1,6 +1,6 @@
 // models/notation.dart
 class Notation {
-  final String date;
+  String date;
   final String code;
   late final String note;
   final String name;
