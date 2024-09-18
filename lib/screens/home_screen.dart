@@ -116,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SizedBox(
                     width: double.infinity,
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                       child:
                           //capitalize the first letter each word in the username
                           Text(
@@ -127,7 +127,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Container(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Prochains cours :',
@@ -146,6 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity,
                     child: Container(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Dernières notes :',
@@ -163,6 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     width: double.infinity,
                     child: Container(
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Dernières absences :',
