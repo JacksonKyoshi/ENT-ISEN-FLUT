@@ -28,4 +28,16 @@ class CalendarEvent {
         className: json['className'] as String? ?? ''
     );
   }
+
+  Map<String, dynamic> toJSON() {
+    return {
+      'id': id,
+      'title': title,
+      'start': start.toString(),
+      'end': end.toString(),
+      'allDay': allDay,
+      'editable': editable,
+      'className': className
+    };
+  }
 }
