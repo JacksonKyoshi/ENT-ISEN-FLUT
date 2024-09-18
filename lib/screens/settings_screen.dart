@@ -1,8 +1,10 @@
 import 'dart:io';
 
+import 'package:ent/screens/feedback_forms_screen.dart';
 import 'package:ent/services/cache.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -59,8 +61,11 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 
-  void reportBug() {
+  void bugReportOrFeatureRequest() {
+    // this link is and SHOULD BE ONLY ACCESSIBLE BY ISEN people.
+    final Uri url = Uri.parse("https://forms.office.com/e/wH8cPZrfhT");
 
+    launchUrl(url);
   }
 
   @override
@@ -84,12 +89,30 @@ class SettingsScreen extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.report),
             title: Text("Rapporter un bug"),
-            onTap: reportBug,
+            onTap: () => {
+              //TODO: make a functional FeedBackFormsScreen to get bug reports
+              /*
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FeedbackFormsScreen(formOption: FeedbackFormOption.BUG))
+              )
+              */
+              bugReportOrFeatureRequest()
+            },
           ),
           ListTile(
             leading: Icon(Icons.feedback),
             title: Text("Proposer une fonctionnalité"),
-            onTap: reportBug,
+            onTap: () => {
+              //TODO: make a functional FeedBackFormsScreen to get feature request
+              /*
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const FeedbackFormsScreen(formOption: FeedbackFormOption.FEATURE))
+              )
+              */
+              bugReportOrFeatureRequest()
+            },
           ),
 
         ],
