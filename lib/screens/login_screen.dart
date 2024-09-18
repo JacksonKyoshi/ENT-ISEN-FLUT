@@ -99,7 +99,7 @@ class _LoginPageState extends State<LoginScreen> {
   void initState() {
     super.initState();
 
-    readFromCache('cacheloginIsenFlut.txt').then((content) {
+    readFromCache('login.cache').then((content) {
       if (content != null) {
         Map<String, dynamic> jsonMap = json.decode(content);
         String username = jsonMap['username'];
@@ -228,9 +228,9 @@ class _LoginPageState extends State<LoginScreen> {
                                 'password': password,
                               };
                               final jsonData = json.encode(data);
-                              await writeToCache('cacheloginIsenFlut.txt', jsonData);
+                              await writeToCache('login.cache', jsonData);
                             } else {
-                              deleteCacheFile('cacheloginIsenFlut.txt');
+                              deleteCacheFile('login.cache');
                             }
 
                             fetchJson(username, password, context, _usernameController, _passwordController, _remindOfMe);
