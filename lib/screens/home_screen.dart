@@ -1,18 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'calendar_screen.dart';
-import '../model/absences.dart';
-import 'absence_screen.dart';
 import '../services/User_service.dart';
-import '../services/calendar_service.dart';
-import '../model/notation.dart';
-import 'notes/note_screen.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
-import '../widgets/hamburger_menu.dart';
+import '../widgets/day_view.dart';
 import 'dart:async';
-import '../services/ics_parser.dart';
+import '../model/calendar_event.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -22,160 +14,178 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService apiService =
-      ApiService('https://api-ent.isenengineering.fr');
+  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
+  final String token = TokenManager.getInstance().getToken();
 
-  late Future<List<Notation>> _notationsFuture;
-  Timer? _timer;
+  DateTime selectedDay = DateTime.now();
+  CalendarEvent? selectedEvent;
+
+  late Future<List<CalendarEvent>> _calendarFuture = Future.value([]);
 
   @override
   void initState() {
     super.initState();
-    String token = TokenManager.getInstance().getToken();
-    print('répoonse $token');
-    _notationsFuture = apiService.fetchNotations(token);
-    Provider.of<CalendarEventProvider>(context, listen: false)
-        .fetchEvents(UserManager.getInstance().getUsername().toLowerCase())
-        .then((_) => setupCurrentEvent());
-  }
-
-  void setupCurrentEvent() {
-    var calendarEvents =
-        Provider.of<CalendarEventProvider>(context, listen: false).events;
-    if (calendarEvents != null && calendarEvents.isNotEmpty) {
-      CalendarEvent? currentEvent = calendarEvents.firstWhere(
-          (event) =>
-              event.start!.isBefore(DateTime.now()) &&
-              event.end!.isAfter(DateTime.now()),
-          orElse: () => CalendarEvent(
-                summary: 'no event',
-                description: {},
-                start: DateTime.now(),
-                end: DateTime.now(),
-                location: null,
-                url: null,
-                attendees: null,
-                organizer: null,
-              ));
-      if (currentEvent != null) {
-        var duration = currentEvent.end!.difference(DateTime.now());
-        _timer = Timer(
-            duration,
-            () => Provider.of<CalendarEventProvider>(context, listen: false)
-                .fetchEvents(
-                    UserManager.getInstance().getUsername().toLowerCase()));
-      }
+    selectedDay = DateTime.now();
+    debugPrint('selectedDay: $selectedDay');
+    if (selectedDay.weekday == DateTime.sunday) {
+      selectedDay = selectedDay.add(const Duration(days: 1));
     }
+    updateCalendarEvents();
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel(); // Dispose the timer when the widget is disposed
-    super.dispose();
+  void updateCalendarEvents() {
+    setState(() {
+      _calendarFuture = fetchEventsForDay(selectedDay);
+    });
   }
 
-  double calculateProgress(CalendarEvent event) {
-    DateTime now = DateTime.now();
-    double totalDuration =
-        event.end!.difference(event.start!).inMinutes.toDouble();
-    double elapsedDuration = now.difference(event.start!).inMinutes.toDouble();
-    return elapsedDuration / totalDuration;
+  Future<List<CalendarEvent>> fetchEventsForDay(DateTime day, {int maxDays = 30, int currentDayCount = 0}) async {
+    if (currentDayCount >= maxDays) {
+      return [];
+    }
+
+    List<CalendarEvent> events = await apiService.fetchCalendar(
+      token,
+      DateTime(day.year, day.month, day.day),
+      DateTime(day.year, day.month, day.day, 23, 59)
+    ) as List<CalendarEvent>;
+
+    if (events.length < 2 && currentDayCount < maxDays) {
+      // If no events for the current day, fetch for the next week and add to the current list
+      // Number of days to fetch is maxDays - currentDayCount
+      debugPrint('No events for $day, fetching for the next week');
+      currentDayCount += 7;
+      List<CalendarEvent> nextEvents = await fetchEventsForDay(day.add(const Duration(days: 1)), maxDays: maxDays, currentDayCount: currentDayCount + 1);
+      events.addAll(nextEvents);
+    }
+    return events;
+  }
+
+  void onEventSelected(CalendarEvent event) {
+    setState(() {
+      selectedEvent = event;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var calendarEvents = Provider.of<CalendarEventProvider>(context).events;
-    CalendarEvent? currentEvent;
-    if (calendarEvents != null && calendarEvents.isNotEmpty) {
-      currentEvent = calendarEvents.firstWhere(
-        (event) => (event.start!.isBefore(DateTime.now()) &&
-            event.end!.isAfter(DateTime.now())),
-        orElse: () => CalendarEvent(
-          summary: 'Pas de cours en cours',
-          description: {},
-          start: DateTime.now(),
-          end: DateTime.now(),
-          location: null,
-          url: null,
-          attendees: null,
-          organizer: null,
-        ),
-      );
-    }
     return Scaffold(
-      body: SingleChildScrollView(
-          child: Column(
-        children: [
-          //large text
-          SizedBox(
-            width: double.infinity,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child:
-                  //capitalize the first letter each word in the username
-                  Text(
-                'Bonjour ${UserManager.getInstance().getUsername().split('.')[0].split(' ').map((String word) => word[0].toUpperCase() + word.substring(1)).join(' ')}',
-                style: Theme.of(context).textTheme.headlineLarge,
-                textAlign: TextAlign.left,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: Container(
+      body: FutureBuilder<List<CalendarEvent>>(
+        future: _calendarFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Erreur de chargement des données'));
+          } else {
+            List<CalendarEvent> events = snapshot.data!;
+            List<CalendarEvent> displayEvents = [];
+
+            // Find the current event
+            CalendarEvent? currentEvent;
+            for (var event in events) {
+              if (event.start!.isBefore(DateTime.now()) && event.end!.isAfter(DateTime.now())) {
+                currentEvent = event;
+                break;
+              }
+            }
+
+            if (currentEvent != null) {
+              displayEvents.add(currentEvent);
+              // Add the next event after the current event
+              for (var event in events) {
+                if (event.start!.isAfter(currentEvent.end!)) {
+                  displayEvents.add(event);
+                  break;
+                }
+              }
+            } else {
+              // Add the next two events if there is no current event
+              displayEvents = events.take(2).toList();
+            }
+
+            return SingleChildScrollView(
               child: Column(
                 children: [
-                  Text(
-                    'Prochains cours :',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.left,
+                  //large text
+                  SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      padding: const EdgeInsets.all(16),
+                      child:
+                          //capitalize the first letter each word in the username
+                          Text(
+                        'Bonjour ${UserManager.getInstance().getUsername().split('.')[0].split(' ').map((String word) => word[0].toUpperCase() + word.substring(1)).join(' ')}',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
                   ),
-                  //place holder box
-                  Container(
+                  SizedBox(
+                    width: double.infinity,
                     height: 200,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Prochains cours :',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.left,
+                          ),
+                          // Display current event + next one or next 2 events
+                          Expanded(
+                            child: DayView(
+                              date: selectedDay,
+                              onEventSelected: onEventSelected,
+                              events: displayEvents,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Dernières notes :',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.left,
+                          ),
+                          //place holder box
+                          Container(
+                            height: 200,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      child: Column(
+                        children: [
+                          Text(
+                            'Dernières absences :',
+                            style: Theme.of(context).textTheme.headlineMedium,
+                            textAlign: TextAlign.left,
+                          ),
+                          //place holder box
+                          Container(
+                            height: 200,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: Container(
-              child: Column(
-                children: [
-                  Text(
-                    'Dernières notes :',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.left,
-                  ),
-                  //place holder box
-                  Container(
-                    height: 200,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          SizedBox(
-            width: double.infinity,
-            child: Container(
-              child: Column(
-                children: [
-                  Text(
-                    'Dernières absences :',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                    textAlign: TextAlign.left,
-                  ),
-                  //place holder box
-                  Container(
-                    height: 200,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      )),
+            );
+          }
+        },
+      ),
     );
   }
 }
