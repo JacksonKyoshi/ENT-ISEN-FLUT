@@ -1,7 +1,8 @@
-import 'package:ent/screens/calendar/calendar_screen.dart';
+import 'package:ent/screens/calendar_screen.dart';
 import 'package:ent/screens/home_screen.dart';
 import 'package:ent/screens/absence_screen.dart';
 import 'package:ent/screens/notes/note_screen.dart';
+import 'package:ent/screens/settings_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainHandler extends StatefulWidget {
@@ -51,6 +52,16 @@ class _MainHandlerState extends State<MainHandler> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Flut - ENT ISEN'),
+          actions: [
+            IconButton(
+                onPressed: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsScreen())
+                  )
+                },
+                icon: Icon(Icons.settings))
+          ],
         ),
         body: PageView(
           controller: _pageController,
@@ -75,12 +86,7 @@ class _MainHandlerState extends State<MainHandler> {
             BottomNavigationBarItem(
                 icon: Icon(Icons.do_not_step),
                 label: "Absences"
-            ),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.menu),
-                label: "Autre"
-            ),
-
+            )
           ],
 
           currentIndex: _selectedPage,
