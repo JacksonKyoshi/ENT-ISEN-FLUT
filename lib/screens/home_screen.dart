@@ -24,7 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late Future<List<CalendarEvent>> _calendarFuture = Future.value([]);
 
-  final double horizontalPadding = 8; // Define padding variable
+  final double horizontalPadding = 16.0; // Define padding variable
 
   @override
   void initState() {
@@ -44,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<CalendarEvent>> fetchEventsForWeek(DateTime day,
-      {int maxDays = 30, int currentDayCount = 0}) async {
+      {int maxDays = 300, int currentDayCount = 0}) async {
     List<CalendarEvent> events = [];
 
     while (events.length < 2 && currentDayCount < maxDays) {
@@ -137,9 +137,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.left,
                       ),
-                      SingleChildScrollView(
-                        child: Container(
-                          child: NextEvents(events: displayEvents),
+                      Container(
+                        constraints: BoxConstraints(
+                          maxHeight: MediaQuery.of(context).size.height / 3,
+                        ),
+                        child: SingleChildScrollView(
+                          child: Container(
+                            child: NextEvents(events: displayEvents),
+                          ),
                         ),
                       ),
                     ],
