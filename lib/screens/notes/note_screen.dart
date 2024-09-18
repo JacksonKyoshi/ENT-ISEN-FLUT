@@ -49,6 +49,9 @@ class _NotesScreenState extends State<NotesScreen> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else {
+            if (snapshot.data!.isEmpty) {
+              return Center(child: Text("Aucune note trouvée", style: Theme.of(context).textTheme.titleLarge));
+            }
             return ListView.builder(
               padding: EdgeInsets.all(8.0),
               shrinkWrap: true, // Réduit la taille de ListView à son contenu
