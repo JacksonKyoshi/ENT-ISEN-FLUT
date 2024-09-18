@@ -23,7 +23,7 @@ class _NotesScreenState extends State<NotesScreen> {
   void initState() {
     super.initState();
     String token = TokenManager.getInstance().getToken();
-    _notationsFuture = apiService.fetchNotations(token) as Future<List<Notation>>;
+    _notationsFuture = apiService.fetchNotations(token);
   }
 
   @override
@@ -58,10 +58,31 @@ class _NotesScreenState extends State<NotesScreen> {
 
                 return CustomCardList(
                     onTap: () => _showEditDialog(context, notation.code),
-                    leadingText: notation.date,
-                    titleText: notation.name,
-                    subtitleText: notation.comments,
-                    trailingText: notation.note
+                    constraints: BoxConstraints(maxHeight: 100),
+                    leadingColor: Colors.purple,
+                    leading: Text(
+                      notation.date,
+                      style: TextStyle(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
+                    ),
+                    title: AutoSizeText(
+                      notation.name,
+                      style: TextStyle(fontSize: 20.0,fontWeight:FontWeight.bold),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    subtitle: Text(
+                      notation.comments,
+                      style: TextStyle(
+                          fontSize: 14.0, color: Colors.grey[700]),
+                    ),
+                    trailing: Text(
+                      notation.note,
+                      style: TextStyle(
+                          fontSize: 24.0, fontWeight: FontWeight.bold),
+                    )
                 );
               },
             );
