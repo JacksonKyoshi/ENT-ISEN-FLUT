@@ -1,3 +1,4 @@
+import 'package:ent/widgets/next_events.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -40,29 +41,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void updateCalendarEvents() {
     setState(() {
-      _calendarFuture = fetchEventsForDay(selectedDay);
+      _calendarFuture = fetchEventsForWeek(selectedDay);
     });
   }
 
-  Future<List<CalendarEvent>> fetchEventsForDay(DateTime day, {int maxDays = 30, int currentDayCount = 0}) async {
-    if (currentDayCount >= maxDays) {
-      return [];
-    }
+  Future<List<CalendarEvent>> fetchEventsForWeek(DateTime day, {int maxDays = 300, int currentDayCount = 0}) async {
+    List<CalendarEvent> events = [];
 
-    List<CalendarEvent> events = await apiService.fetchCalendar(
-      token,
-      DateTime(day.year, day.month, day.day),
-      DateTime(day.year, day.month, day.day, 23, 59)
-    ) as List<CalendarEvent>;
+    while (events.length < 2 && currentDayCount < maxDays) {
+      List<CalendarEvent> weekEvents = await apiService.fetchCalendar(
+        token,
+        DateTime(day.year, day.month, day.day, day.hour, day.minute),
+        DateTime(day.year, day.month, day.day, 23, 59).add(const Duration(days: 7)),
+      ) as List<CalendarEvent>;
 
-    if (events.length < 2 && currentDayCount < maxDays) {
-      // If no events for the current day, fetch for the next week and add to the current list
-      // Number of days to fetch is maxDays - currentDayCount
-      debugPrint('No events for $day, fetching for the next week');
+      events.addAll(weekEvents);
       currentDayCount += 7;
-      List<CalendarEvent> nextEvents = await fetchEventsForDay(day.add(const Duration(days: 1)), maxDays: maxDays, currentDayCount: currentDayCount + 1);
-      events.addAll(nextEvents);
+      day = day.add(const Duration(days: 7));
+      debugPrint('currentDayCount: $currentDayCount');
+      debugPrint('events.length: ${events.length}');
     }
+
+    // Ensure the events list is unique
+    events = events.toSet().toList();
     return events;
   }
 
@@ -109,8 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
               displayEvents = events.take(2).toList();
             }
 
-            return SingleChildScrollView(
-              child: Column(
+            return Column(
                 children: [
                   //large text
                   SizedBox(
@@ -126,10 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 200,
-                    child: Container(
+                  Container(
                       child: Column(
                         children: [
                           Text(
@@ -137,17 +134,13 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: Theme.of(context).textTheme.headlineMedium,
                             textAlign: TextAlign.left,
                           ),
-                          // Display current event + next one or next 2 events
-                          Expanded(
-                            child: DayView(
-                              date: selectedDay,
-                              onEventSelected: onEventSelected,
-                              events: displayEvents,
+                          SingleChildScrollView(
+                          child: Container(
+                            child: NextEvents(events: displayEvents),
                             ),
                           ),
                         ],
                       ),
-                    ),
                   ),
                   SizedBox(
                     width: double.infinity,
@@ -161,7 +154,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           //place holder box
                           Container(
-                            height: 200,
                           ),
                         ],
                       ),
@@ -179,14 +171,12 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           //place holder box
                           Container(
-                            height: 200,
                           ),
                         ],
                       ),
                     ),
                   ),
                 ],
-              ),
             );
           }
         },
