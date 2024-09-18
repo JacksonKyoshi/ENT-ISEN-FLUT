@@ -15,13 +15,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
+  final ApiService apiService =
+      ApiService('https://api-ent.isenengineering.fr');
   final String token = TokenManager.getInstance().getToken();
 
   DateTime selectedDay = DateTime.now();
   CalendarEvent? selectedEvent;
 
   late Future<List<CalendarEvent>> _calendarFuture = Future.value([]);
+
+  final double horizontalPadding = 8; // Define padding variable
 
   @override
   void initState() {
@@ -40,14 +43,16 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<List<CalendarEvent>> fetchEventsForWeek(DateTime day, {int maxDays = 300, int currentDayCount = 0}) async {
+  Future<List<CalendarEvent>> fetchEventsForWeek(DateTime day,
+      {int maxDays = 30, int currentDayCount = 0}) async {
     List<CalendarEvent> events = [];
 
     while (events.length < 2 && currentDayCount < maxDays) {
       List<CalendarEvent> weekEvents = await apiService.fetchCalendar(
         token,
         DateTime(day.year, day.month, day.day, day.hour, day.minute),
-        DateTime(day.year, day.month, day.day, 23, 59).add(const Duration(days: 7)),
+        DateTime(day.year, day.month, day.day, 23, 59)
+            .add(const Duration(days: 7)),
       ) as List<CalendarEvent>;
 
       events.addAll(weekEvents);
@@ -85,7 +90,8 @@ class _HomeScreenState extends State<HomeScreen> {
             // Find the current event
             CalendarEvent? currentEvent;
             for (var event in events) {
-              if (event.start!.isBefore(DateTime.now()) && event.end!.isAfter(DateTime.now())) {
+              if (event.start!.isBefore(DateTime.now()) &&
+                  event.end!.isAfter(DateTime.now())) {
                 currentEvent = event;
                 break;
               }
@@ -106,76 +112,70 @@ class _HomeScreenState extends State<HomeScreen> {
             }
 
             return Column(
-                children: [
-                  //large text
-                  SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                      child:
-                          //capitalize the first letter each word in the username
-                          Text(
-                        'Bonjour ${UserManager.getInstance().getUsername().split('.')[0].split(' ').map((String word) => word[0].toUpperCase() + word.substring(1)).join(' ')}',
-                        style: Theme.of(context).textTheme.headlineLarge,
+              children: [
+                //large text
+                SizedBox(
+                  width: double.infinity,
+                  child: Container(
+                    padding: EdgeInsets.fromLTRB(horizontalPadding, 16, horizontalPadding, 0),
+                    child:
+                        //capitalize the first letter each word in the username
+                        Text(
+                      'Bonjour ${UserManager.getInstance().getUsername().split('.')[0].split(' ').map((String word) => word[0].toUpperCase() + word.substring(1)).join(' ')}',
+                      style: Theme.of(context).textTheme.headlineLarge,
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Prochains cours :',
+                        style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.left,
                       ),
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Prochains cours :',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            textAlign: TextAlign.left,
-                          ),
-                          SingleChildScrollView(
-                          child: Container(
-                            child: NextEvents(events: displayEvents),
-                            ),
-                          ),
-                        ],
+                      SingleChildScrollView(
+                        child: Container(
+                          child: NextEvents(events: displayEvents),
+                        ),
                       ),
+                    ],
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Dernières notes :',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            textAlign: TextAlign.left,
-                          ),
-                          //place holder box
-                          Container(
-                          ),
-                        ],
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Dernières notes :',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                        textAlign: TextAlign.left,
                       ),
-                    ),
+                      //place holder box
+                      Container(),
+                    ],
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Container(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Dernières absences :',
-                            style: Theme.of(context).textTheme.headlineMedium,
-                            textAlign: TextAlign.left,
-                          ),
-                          //place holder box
-                          Container(
-                          ),
-                        ],
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Dernières absences :',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                        textAlign: TextAlign.left,
                       ),
-                    ),
+                      //place holder box
+                      Container(),
+                    ],
                   ),
-                ],
+                ),
+              ],
             );
           }
         },
