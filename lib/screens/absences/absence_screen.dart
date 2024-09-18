@@ -1,10 +1,9 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-import '../model/absences.dart';
-import '../services/api_service.dart';
-import '../services/token_service.dart';
-import '../widgets/custom_card_list.dart';
+import '../../model/absences.dart';
+import '../../services/api_service.dart';
+import '../../services/token_service.dart';
+import 'absence_list.dart';
 
 
 class AbsenceView extends StatefulWidget {
@@ -153,56 +152,6 @@ class _AbsenceViewState extends State<AbsenceView> {
           },
         ),
       ),
-    );
-  }
-}
-
-class AbsenceList extends StatelessWidget {
-  const AbsenceList({super.key, required this.absences});
-
-  final List<Absence> absences;
-
-  @override
-  Widget build(BuildContext context) {
-    if (absences.isEmpty) {
-      return Center(
-          child: Text("Aucune absence enregistrée", style: Theme.of(context).textTheme.bodyLarge)
-      );
-    }
-
-    return ListView.builder(
-      itemCount: absences.length,
-      itemBuilder: (context, index) {
-        Absence absence = absences[index];
-        return CustomCardList(
-            constraints: BoxConstraints(maxHeight: 100),
-            leadingColor: Colors.purple,
-            leading: Text(
-              absence.date,
-              style: TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            ),
-            title: AutoSizeText(
-              absence.course,
-              style: TextStyle(fontSize: 20.0,fontWeight:FontWeight.bold),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-            subtitle: Text(
-              absence.teachers.join(", "),
-              style: TextStyle(
-                  fontSize: 14.0, color: Colors.grey[700]),
-            ),
-            trailing: Text(
-              absence.duration,
-              style: TextStyle(
-                  fontSize: 24.0, fontWeight: FontWeight.bold),
-            ),
-            onTap: () {  },
-        );
-      },
     );
   }
 }
