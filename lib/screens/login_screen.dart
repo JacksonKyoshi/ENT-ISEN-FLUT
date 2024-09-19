@@ -36,7 +36,7 @@ void fetchJson(String username, String password, BuildContext context, TextEditi
         MaterialPageRoute(builder: (context) => MyApp()),
       );
     }
-  } else {
+  } if(response.statusCode == 500) {
     debugPrint('Erreur lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
 
     usernameController.text = username;
@@ -47,15 +47,23 @@ void fetchJson(String username, String password, BuildContext context, TextEditi
       builder: (context) {
         return AlertDialog(
           icon: Icon(Icons.error, color: Colors.red),
-          title: Text("Erreur ${response.statusCode}\n${response.reasonPhrase}"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text("Le serveur a rencontré une erreur et a renvoyé le message suivant :"),
-                Text(response.body),
-              ],
-            ),
-          ),
+          title: Text("Erreur :\nL'ENT EST DOWN :("),
+        );
+      },
+    );
+  }
+  if(response.statusCode == 500) {
+    debugPrint('Erreur : lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
+
+    usernameController.text = username;
+    passwordController.text = password;
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          icon: Icon(Icons.error, color: Colors.red),
+          title: Text("Erreur :\nMauvais login/Mot de passe"),
         );
       },
     );
@@ -66,7 +74,6 @@ void fetchJson(String username, String password, BuildContext context, TextEditi
 
 
 void main() async {
-
   runApp(LoginApp());
 }
 
