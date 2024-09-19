@@ -2,8 +2,7 @@
     <application
         android:label="Flut - ENT ISEN"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher"
-        android:debuggable="false">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
             android:exported="true"
