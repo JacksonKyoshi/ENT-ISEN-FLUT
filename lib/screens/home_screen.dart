@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'calendar_screen.dart';
 import '../model/absences.dart';
-import 'absence_screen.dart';
+import 'absences/absence_screen.dart';
 import '../services/User_service.dart';
 import '../services/calendar_service.dart';
 import '../model/notation.dart';
