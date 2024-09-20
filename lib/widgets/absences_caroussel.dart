@@ -1,13 +1,11 @@
 
 import 'package:ent/model/absences.dart';
-import 'package:ent/model/notation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AbsencesCaroussel extends StatelessWidget {
   final List<Absence> absences;
 
-  AbsencesCaroussel({required this.absences});
+  const AbsencesCaroussel({super.key, required this.absences});
 
   //only keep the 5 most recent unexcused absences to display
   List<Absence> getRecentAbsences() {
@@ -47,7 +45,7 @@ class AbsencesCaroussel extends StatelessWidget {
           Absence absences = getRecentAbsences()[index];
           return Container(
             width: MediaQuery.of(context).size.width / 1.5,
-            margin: EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
@@ -56,7 +54,7 @@ class AbsencesCaroussel extends StatelessWidget {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3),
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -82,7 +80,7 @@ class AbsencesCaroussel extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       absences.duration,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
                       ),

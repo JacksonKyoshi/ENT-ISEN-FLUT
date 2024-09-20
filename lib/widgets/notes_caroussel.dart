@@ -1,12 +1,11 @@
 
 import 'package:ent/model/notation.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NotesCaroussel extends StatelessWidget {
   final List<Notation> notes;
 
-  NotesCaroussel({required this.notes});
+  const NotesCaroussel({super.key, required this.notes});
 
   //only keep the 5 most recent notes to display
   List<Notation> getRecentNotes() {
@@ -44,7 +43,7 @@ class NotesCaroussel extends StatelessWidget {
           Notation note = getRecentNotes()[index];
           return Container(
             width: MediaQuery.of(context).size.width / 1.5,
-            margin: EdgeInsets.all(8.0),
+            margin: const EdgeInsets.all(8.0),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
@@ -53,7 +52,7 @@ class NotesCaroussel extends StatelessWidget {
                   color: Colors.grey.withOpacity(0.5),
                   spreadRadius: 2,
                   blurRadius: 5,
-                  offset: Offset(0, 3),
+                  offset: const Offset(0, 3),
                 ),
               ],
             ),
@@ -79,7 +78,7 @@ class NotesCaroussel extends StatelessWidget {
                     padding: const EdgeInsets.all(8.0),
                     child: Text(
                       note.note,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 36,
                         fontWeight: FontWeight.bold,
                       ),

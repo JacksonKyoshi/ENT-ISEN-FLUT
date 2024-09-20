@@ -52,7 +52,7 @@ class DayView extends StatelessWidget {
                         ],
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: RotatedBox(
                           quarterTurns: 1,
                           child: LinearProgressIndicator(
@@ -70,7 +70,7 @@ class DayView extends StatelessWidget {
                           children: <Widget>[
                             Row(
                               children: <Widget>[
-                                Icon(Icons.subject, size: 26),
+                                const Icon(Icons.subject, size: 26),
                                 Expanded(
                                   child: Text(
                                     eventDescriptions[2],
@@ -84,7 +84,7 @@ class DayView extends StatelessWidget {
                               visible: eventDescriptions[3].isNotEmpty && eventDescriptions[4].isNotEmpty,
                               child: Row(
                                 children: <Widget>[
-                                  Icon(Icons.person),
+                                  const Icon(Icons.person),
                                   Text('${eventDescriptions[3]} ${eventDescriptions[4]}'),
                                 ],
                               ),
@@ -93,7 +93,7 @@ class DayView extends StatelessWidget {
                               visible: eventDescriptions[5].isNotEmpty,
                               child: Row(
                                 children: <Widget>[
-                                  Icon(Icons.location_on),
+                                  const Icon(Icons.location_on),
                                   Text(eventDescriptions[5]),
                                 ],
                               ),

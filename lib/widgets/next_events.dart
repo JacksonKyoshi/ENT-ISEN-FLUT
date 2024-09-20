@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -8,7 +7,7 @@ import 'day_view.dart';
 class NextEvents extends StatelessWidget {
   final List<CalendarEvent> events;
 
-  const NextEvents({Key? key, required this.events}) : super(key: key);
+  const NextEvents({super.key, required this.events});
 
   @override
   Widget build(BuildContext context) {

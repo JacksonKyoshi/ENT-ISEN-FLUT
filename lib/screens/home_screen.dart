@@ -6,13 +6,12 @@ import '../model/notation.dart';
 import '../services/User_service.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
-import '../widgets/day_view.dart';
 import 'dart:async';
 import '../model/calendar_event.dart';
 import '../widgets/notes_caroussel.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
@@ -90,9 +89,9 @@ class _HomeScreenState extends State<HomeScreen> {
         future: _calendarFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Erreur de chargement des données'));
+            return const Center(child: Text('Erreur de chargement des données'));
           } else {
             List<CalendarEvent> events = snapshot.data!;
             List<CalendarEvent> displayEvents = [];
@@ -180,9 +179,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
+                                return const Center(child: CircularProgressIndicator());
                               } else if (snapshot.hasError) {
-                                return Center(
+                                return const Center(
                                     child:
                                     Text('Erreur de chargement des données'));
                               } else if (!snapshot.hasData ||
@@ -228,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             builder: (context, snapshot) {
                               if (snapshot.connectionState ==
                                   ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
+                                return const Center(child: CircularProgressIndicator());
                               } else if (snapshot.hasError) {
-                                return Center(
+                                return const Center(
                                     child:
                                     Text('Erreur de chargement des données'));
                               } else if (!snapshot.hasData ||
