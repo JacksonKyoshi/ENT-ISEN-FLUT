@@ -54,7 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<CalendarEvent>> fetchEventsForWeek(DateTime day,
-      {int maxDays = 300, int currentDayCount = 0}) async {
+      {int maxDays = 30, int currentDayCount = 0}) async {
     List<CalendarEvent> events = [];
 
     while (events.length < 2 && currentDayCount < maxDays) {
