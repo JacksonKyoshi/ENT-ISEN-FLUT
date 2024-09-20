@@ -56,7 +56,7 @@ class DayView extends StatelessWidget {
                         child: RotatedBox(
                           quarterTurns: 1,
                           child: LinearProgressIndicator(
-                            value: DateTime.now().difference(event.start).inMinutes / event.end.difference(event.start).inMinutes,
+                            value: DateTime.now().isBefore(event.start) ? 1 : DateTime.now().isAfter(event.end) ? 1 : DateTime.now().difference(event.start).inMinutes / event.end.difference(event.start).inMinutes,
                             backgroundColor: Colors.grey[200],
                             color: Colors.purple,
                             borderRadius: BorderRadius.circular(10),

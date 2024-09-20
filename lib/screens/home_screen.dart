@@ -53,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         DateTime(day.year, day.month, day.day, day.hour, day.minute),
         DateTime(day.year, day.month, day.day, 23, 59)
             .add(const Duration(days: 7)),
-      ) as List<CalendarEvent>;
+      );
 
       events.addAll(weekEvents);
       currentDayCount += 7;
@@ -87,28 +87,14 @@ class _HomeScreenState extends State<HomeScreen> {
             List<CalendarEvent> events = snapshot.data!;
             List<CalendarEvent> displayEvents = [];
 
-            // Find the current event
-            CalendarEvent? currentEvent;
+            // get the first two events that ends after the current time
             for (var event in events) {
-              if (event.start!.isBefore(DateTime.now()) &&
-                  event.end!.isAfter(DateTime.now())) {
-                currentEvent = event;
+              if (event.end.isAfter(DateTime.now())) {
+                displayEvents.add(event);
+              }
+              if (displayEvents.length >= 2) {
                 break;
               }
-            }
-
-            if (currentEvent != null) {
-              displayEvents.add(currentEvent);
-              // Add the next event after the current event
-              for (var event in events) {
-                if (event.start!.isAfter(currentEvent.end!)) {
-                  displayEvents.add(event);
-                  break;
-                }
-              }
-            } else {
-              // Add the next two events if there is no current event
-              displayEvents = events.take(2).toList();
             }
 
             return Column(
