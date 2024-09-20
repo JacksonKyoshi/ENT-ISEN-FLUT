@@ -36,7 +36,7 @@ void fetchJson(String username, String password, BuildContext context, TextEditi
         MaterialPageRoute(builder: (context) => MyApp()),
       );
     }
-  } if(response.statusCode == 500) {
+  } if(response.statusCode == 504) {
     debugPrint('Erreur lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
 
     usernameController.text = username;
@@ -52,7 +52,7 @@ void fetchJson(String username, String password, BuildContext context, TextEditi
       },
     );
   }
-  if(response.statusCode == 500) {
+  if(response.statusCode == 401) {
     debugPrint('Erreur : lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
 
     usernameController.text = username;
