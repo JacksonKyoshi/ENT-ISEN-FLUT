@@ -1,4 +1,4 @@
-import 'package:ent/widgets/custom_card_list.dart';
+import 'package:flut/widgets/custom_card_list.dart';
 import 'package:flutter/material.dart';
 import '../../model/notation.dart';
 import '../../services/api_service.dart';
