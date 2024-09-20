@@ -1,3 +1,5 @@
+import 'package:ent/model/absences.dart';
+import 'package:ent/widgets/absences_caroussel.dart';
 import 'package:ent/widgets/next_events.dart';
 import 'package:flutter/material.dart';
 import '../model/notation.dart';
@@ -28,6 +30,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   late Future<List<Notation>> _notationsFuture;
 
+  late Future<List<Absence>> _absencesFuture = Future.value([]);
+
   final double horizontalPadding = 16.0; // Define padding variable
 
   @override
@@ -40,6 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     updateCalendarEvents();
     _notationsFuture = apiService.fetchNotations(token);
+    _absencesFuture = apiService.fetchAbsence(token);
   }
 
   void updateCalendarEvents() {
@@ -201,8 +206,34 @@ class _HomeScreenState extends State<HomeScreen> {
                           style: Theme.of(context).textTheme.headlineMedium,
                           textAlign: TextAlign.left,
                         ),
-                        //place holder box
-                        Container(),
+                        Container(
+                          constraints: BoxConstraints(
+                            minHeight: MediaQuery.of(context).size.height / 8,
+                          ),
+                          child:
+                          FutureBuilder<List<Absence>>(
+                            future: _absencesFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return Center(
+                                    child:
+                                    Text('Erreur de chargement des données'));
+                              } else if (!snapshot.hasData ||
+                                  snapshot.data!.isEmpty) {
+                                return Center(
+                                    child: Text('Pas d\'absences disponibles',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall));
+                              } else {
+                                return AbsencesCaroussel(absences: snapshot.data!);
+                              }
+                            },
+                          ),
+                        )
                       ],
                     ),
                   ),
