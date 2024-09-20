@@ -37,7 +37,7 @@ class NextEvents extends StatelessWidget {
               ),
             Container(
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height/5, // Adjust the height as needed
+                maxHeight: MediaQuery.of(context).size.height/5 * dayEvents.length, // Adjust the height as needed
               ),
               child: DayView(date: date, events: dayEvents, onEventSelected: (event) {
                 Navigator.pushNamed(context, '/event', arguments: event);
