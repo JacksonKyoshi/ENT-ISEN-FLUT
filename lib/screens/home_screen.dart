@@ -153,6 +153,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                   ),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    indent: horizontalPadding,
+                    endIndent: horizontalPadding,
+                  ),
                   Container(
                     padding:
                         EdgeInsets.symmetric(horizontal: horizontalPadding),
@@ -194,6 +200,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         )
                       ],
                     ),
+                  ),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    indent: horizontalPadding,
+                    endIndent: horizontalPadding,
                   ),
                   Container(
                     padding:
