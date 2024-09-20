@@ -51,7 +51,18 @@ class DayView extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const VerticalDivider(color: Colors.purple, thickness: 4),
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 8),
+                        child: RotatedBox(
+                          quarterTurns: 1,
+                          child: LinearProgressIndicator(
+                            value: DateTime.now().difference(event.start).inMinutes / event.end.difference(event.start).inMinutes,
+                            backgroundColor: Colors.grey[200],
+                            color: Colors.purple,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
                       Expanded(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,

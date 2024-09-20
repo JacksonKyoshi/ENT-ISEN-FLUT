@@ -161,7 +161,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         textAlign: TextAlign.left,
                       ),
                       //place holder box
-                      Container(),
+                      Container(
+
+                      ),
                     ],
                   ),
                 ),
