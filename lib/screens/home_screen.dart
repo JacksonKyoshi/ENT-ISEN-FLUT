@@ -1,10 +1,5 @@
 import 'package:ent/widgets/next_events.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'calendar_screen.dart';
-import '../model/absences.dart';
-import 'absences/absence_screen.dart';
 import '../services/User_service.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
