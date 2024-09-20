@@ -123,16 +123,24 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: Theme.of(context).textTheme.headlineMedium,
                         textAlign: TextAlign.left,
                       ),
-                      Container(
-                        constraints: BoxConstraints(
-                          maxHeight: MediaQuery.of(context).size.height / 3,
-                        ),
-                        child: SingleChildScrollView(
-                          child: Container(
-                            child: NextEvents(events: displayEvents),
+                      GestureDetector(
+                        onTap: () {
+                          // TODO: Handle event selection inside NextEvents
+                        },
+                        child: Container(
+                          constraints: BoxConstraints(
+                            maxHeight: MediaQuery.of(context).size.height / 3,
+                          ),
+                          child: SingleChildScrollView(
+                            child: GestureDetector(
+                              onTap: () {
+                                // TODO: Handle event selection inside NextEvents
+                              },
+                              child: NextEvents(events: displayEvents),
+                            ),
                           ),
                         ),
-                      ),
+                      )
                     ],
                   ),
                 ),
@@ -147,9 +155,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         textAlign: TextAlign.left,
                       ),
                       //place holder box
-                      Container(
-
-                      ),
+                      Container(),
                     ],
                   ),
                 ),
