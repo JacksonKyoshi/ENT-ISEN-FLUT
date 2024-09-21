@@ -29,9 +29,9 @@ class _MainHandlerState extends State<MainHandler> {
         if (_selectedPage != itemIndex) {
           _previousSelectedPage = _selectedPage;
           _selectedPage = itemIndex;
-          _pageController.animateToPage(_selectedPage, duration: const Duration(milliseconds: 300), curve: Curves.bounceOut);
         }
     });
+    _pageController.animateToPage(_selectedPage, duration: const Duration(milliseconds: 300), curve: Curves.ease);
   }
 
   void _onPageChanged(int itemIndex) {
