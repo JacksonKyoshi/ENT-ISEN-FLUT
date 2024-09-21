@@ -119,7 +119,6 @@ class _NotesScreenState extends State<NotesScreen> {
               onRefresh: _onRefresh,
               child: ListView.builder(
                 padding: EdgeInsets.all(8.0),
-                shrinkWrap: true, // Réduit la taille de ListView à son contenu
                 itemCount: snapshot.data!.length,
                 itemBuilder: (context, index) {
                   Notation notation = snapshot.data![index];
