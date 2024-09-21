@@ -45,6 +45,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
         date.isBefore(DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
   }
 
+  bool isToday(DateTime date) {
+    DateTime now = DateTime.now();
+
+    return date.isAfter(DateTime(now.year, now.month, now.day)) &&
+        date.isBefore(DateTime(now.year, now.month, now.day, 23, 59));
+  }
+
   bool isThisWeek(DateTime date) {
     DateTime now = DateTime.now();
 
@@ -83,20 +90,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void updateCache() async {
+    DateTime now = DateTime.now();
+
     String cacheValue = await readFromCache(cacheFileName) ?? "";
     if (cacheValue.isNotEmpty) {
       List<dynamic> calendarJson = json.decode(cacheValue);
       List<CalendarEvent> calendarEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
       if (calendarEvents.isNotEmpty) {
-        if (isOnSelectedDay(calendarEvents.first.start)) {
+        if (isToday(calendarEvents.first.start)) {
           return;
         }
       }
     }
-    DateTime oneWeekLater = selectedDay.add(const Duration(days: 7));
+    DateTime oneWeekLater = now.add(const Duration(days: 7));
     apiService.fetchCalendar(
         token,
-        DateTime(selectedDay.year, selectedDay.month, selectedDay.day),
+        DateTime(now.year, now.month, now.day),
         DateTime(oneWeekLater.year, oneWeekLater.month, oneWeekLater.day)
     ).then((cachedEvents) => {
       writeToCache(cacheFileName, json.encode(cachedEvents.map((el) => el.toJSON()).toList()))
