@@ -30,4 +30,16 @@ class Notation {
       teachers: List<String>.from(json['teachers'] as List<dynamic>? ?? []),
     );
   }
+
+  Map<String, dynamic> toJSON() {
+    return {
+      'date': date,
+      'code': code,
+      'name': name,
+      'note': note,
+      'absenceReason': absenceReason,
+      'comments': comments,
+      'teachers': teachers,
+    };
+  }
 }

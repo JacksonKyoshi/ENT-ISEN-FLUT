@@ -17,6 +17,20 @@ class Absence {
     required this.subject,
   });
 
+  // Méthode pour convertir un objet Absence en JSON
+  Map<String, dynamic> toJson() {
+    return {
+      'date': date,
+      'reason': reason,
+      'duration': duration,
+      'hours': hours,
+      'course': course,
+      'teachers': teachers,
+      'subject': subject,
+    };
+  }
+
+  // Méthode pour créer un objet Absence à partir du JSON
   factory Absence.fromJson(Map<String, dynamic> json) {
     return Absence(
       date: json['date'] as String? ?? '',
@@ -28,6 +42,4 @@ class Absence {
       subject: json['subject'] as String? ?? '',
     );
   }
-
-
 }
