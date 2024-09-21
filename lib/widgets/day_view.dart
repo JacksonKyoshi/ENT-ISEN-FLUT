@@ -6,20 +6,34 @@ class DayView extends StatelessWidget {
   final ValueChanged<CalendarEvent> onEventSelected;
   final List<CalendarEvent>
       events; // This should be a list of events for the selected day
+  final Future<void> Function() onRefresh;
 
   DayView(
       {required this.date,
       required this.onEventSelected,
-      required this.events});
+      required this.events,
+      required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
     if (events.isEmpty) {
-      return Container(
-        child: Center(
-          child: Text(
-            'Pas de cours aujourd\'hui',
-            style: Theme.of(context).textTheme.headlineSmall,
+      return LayoutBuilder(
+        builder: (context, constraints) => RefreshIndicator(
+          onRefresh: onRefresh,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+                minHeight: constraints.maxHeight,
+              ),
+              child: Center(
+                child: Text(
+                  'Pas de cours aujourd\'hui',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+              ),
+            ),
           ),
         ),
       );

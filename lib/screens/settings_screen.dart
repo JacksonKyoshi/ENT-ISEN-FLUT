@@ -11,21 +11,37 @@ class SettingsScreen extends StatelessWidget {
 
   void logout(BuildContext context) {
     showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Se déconnecter ?"),
-            content: Text("Cette fonctionnalité n'est pas encore implémentée."),
-            actions: [
-              TextButton(
-                  child: Text("Ok"),
-                  onPressed: () => { Navigator.of(context).pop() },
-              )
-            ],
-          );
-        }
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Se déconnecter ?"),
+          content: Text("Cette fonctionnalité n'est pas encore implémentée."),
+          actions: [
+            TextButton(
+              child: Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Ferme le premier dialogue
+
+                // Vide le cache
+                readFromCache('login.cache').then((content) {
+                  if (content != null) {
+                    deleteCacheFile('login.cache');
+                  }
+
+                  // Retour à la page d'accueil après avoir vidé le cache
+                  Navigator.popUntil(
+                    context,
+                    ModalRoute.withName('/'), // Retour à la homepage
+                  );
+                });
+              },
+            ),
+          ],
+        );
+      },
     );
   }
+
 
   void clearCache(BuildContext context) async {
     void deleteCacheFiles() async {

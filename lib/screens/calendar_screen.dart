@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -39,29 +40,47 @@ class _CalendarScreenState extends State<CalendarScreen> {
     updateCache();
   }
 
-  bool isToday(DateTime date) {
+  bool isOnSelectedDay(DateTime date) {
     return date.isAfter(DateTime(selectedDay.year, selectedDay.month, selectedDay.day)) &&
         date.isBefore(DateTime(selectedDay.year, selectedDay.month, selectedDay.day, 23, 59));
   }
 
-  Future<List<CalendarEvent>> retrieveDataFromCache(DateTime start, DateTime end) async {
-    String cacheValue = await readFromCache(cacheFileName) ?? "";
-    if (cacheValue.isNotEmpty) {
-      List<dynamic> calendarJson = json.decode(cacheValue);
-      List<CalendarEvent> cachedEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
-      List<CalendarEvent> filteredEvents = cachedEvents.where((event) => isToday(event.start)).toList();
-      if (filteredEvents.isNotEmpty) {
-        return filteredEvents;
-      }
+  bool isToday(DateTime date) {
+    DateTime now = DateTime.now();
+
+    return date.isAfter(DateTime(now.year, now.month, now.day)) &&
+        date.isBefore(DateTime(now.year, now.month, now.day, 23, 59));
+  }
+
+  bool isThisWeek(DateTime date) {
+    DateTime now = DateTime.now();
+
+    return date.isAfter(DateTime(now.year, now.month, now.day-1, 23, 59)) &&
+          date.isBefore(DateTime(now.year, now.month, now.day+1, 0, 1).add(const Duration(days: 7)));
+  }
+
+  Future<List<CalendarEvent>> _retrieveDataFromCache(DateTime start, DateTime end) async {
+    String? cacheValue = await readFromCache(cacheFileName);
+
+    if (cacheValue == null) {
+      throw PathNotFoundException;
     }
-    throw RangeError.value(0);
+
+    List<dynamic> calendarJson = json.decode(cacheValue);
+    List<CalendarEvent> cachedEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
+    if (cachedEvents.isEmpty) {
+      updateCache();
+      throw PathNotFoundException;
+    }
+    List<CalendarEvent> filteredEvents = cachedEvents.where((event) => isOnSelectedDay(event.start)).toList();
+    return filteredEvents;
   }
 
   Future<List<CalendarEvent>> updateCalendarEvents(bool forceRefresh, DateTime start, DateTime end) {
-    if (!forceRefresh) {
-      return _calendarFuture = retrieveDataFromCache(start, end).
+    if (!forceRefresh && isThisWeek(start)) {
+      return _calendarFuture = _retrieveDataFromCache(start, end).
       catchError((err) {
-        if (err.toString().contains("RangeError")) {
+        if (err.toString().contains("PathNotFoundException")) {
           return updateCalendarEvents(true, start, end);
         }
         throw err;
@@ -71,18 +90,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
   }
 
   void updateCache() async {
+    DateTime now = DateTime.now();
+
     String cacheValue = await readFromCache(cacheFileName) ?? "";
     if (cacheValue.isNotEmpty) {
       List<dynamic> calendarJson = json.decode(cacheValue);
       List<CalendarEvent> calendarEvents = calendarJson.map((json) => CalendarEvent.fromJSON(json)).toList();
-      if (isToday(calendarEvents.first.start)) {
-        return;
+      if (calendarEvents.isNotEmpty) {
+        if (isToday(calendarEvents.first.start)) {
+          return;
+        }
       }
     }
-    DateTime oneWeekLater = selectedDay.add(const Duration(days: 7));
+    DateTime oneWeekLater = now.add(const Duration(days: 7));
     apiService.fetchCalendar(
         token,
-        DateTime(selectedDay.year, selectedDay.month, selectedDay.day),
+        DateTime(now.year, now.month, now.day),
         DateTime(oneWeekLater.year, oneWeekLater.month, oneWeekLater.day)
     ).then((cachedEvents) => {
       writeToCache(cacheFileName, json.encode(cachedEvents.map((el) => el.toJSON()).toList()))
@@ -228,7 +251,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     ]
                 );
           } else if (snapshot.hasError) {
-            aboveDatePicker = Center(child: Text('Error: ${snapshot.error}'));
+            aboveDatePicker = LayoutBuilder(
+              builder: (context, constraints) => RefreshIndicator(
+                onRefresh: onRefresh,
+                child: SingleChildScrollView(
+                  physics: AlwaysScrollableScrollPhysics(),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: constraints.maxWidth,
+                      minHeight: constraints.maxHeight,
+                    ),
+                    child: Center(child: Text('Error: ${snapshot.error}')),
+                  ),
+                ),
+              ),
+            );
           } else {
           List<CalendarEvent> events = snapshot.data ?? [];
 
@@ -238,6 +275,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 date: selectedDay,
                 onEventSelected: onEventSelected,
                 events: events,
+                onRefresh: onRefresh,
               ),
             );
           }

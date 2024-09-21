@@ -104,24 +104,46 @@ class _LoginPageState extends State<LoginScreen> {
         _passwordFocusNode.canRequestFocus = false;
 
         Navigator.of(context).pop(context);
-
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              icon: Icon(Icons.error, color: Colors.red),
-              title: Text("Erreur ${response.statusCode}\n${response.reasonPhrase}"),
-              content: SingleChildScrollView(
-                child: ListBody(
-                  children: <Widget>[
-                    Text("Le serveur a rencontré une erreur et a renvoyé le message suivant :"),
-                    Text(response.body),
-                  ],
+        
+        if(response.statusCode == 504) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: Icon(Icons.error, color: Colors.red),
+                title: Text("Erreur :\nL'ENT EST DOWN :("),
+              );
+            },
+          );
+        } else if(response.statusCode == 401) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: Icon(Icons.error, color: Colors.red),
+                title: Text("Erreur :\nMauvais login/Mot de passe"),
+              );
+            },
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: Icon(Icons.error, color: Colors.red),
+                title: Text("Erreur ${response.statusCode}\n${response.reasonPhrase}"),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text("Le serveur a rencontré une erreur et a renvoyé le message suivant :"),
+                      Text(response.body),
+                    ],
+                  ),
                 ),
-              ),
-            );
-          },
-        );
+              );
+            },
+          );
+        }
 
         _usernameFocusNode.canRequestFocus = true;
         _passwordFocusNode.canRequestFocus = true;
