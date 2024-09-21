@@ -5,9 +5,10 @@ import '../../model/absences.dart';
 import '../../widgets/custom_card_list.dart';
 
 class AbsenceList extends StatelessWidget {
-  const AbsenceList({super.key, required this.absences});
+  const AbsenceList({super.key, required this.absences, required this.onRefresh});
 
   final List<Absence> absences;
+  final Future<void> Function() onRefresh;
 
   Color defineAbsenceColor(Absence absence) {
     return absence.reason.toLowerCase().contains("justifiée") ? Colors.green :
@@ -18,8 +19,20 @@ class AbsenceList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (absences.isEmpty) {
-      return Center(
-          child: Text("Aucune absence enregistrée", style: Theme.of(context).textTheme.bodyLarge)
+      return LayoutBuilder(
+        builder: (context, constraints) => RefreshIndicator(
+          onRefresh: onRefresh,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: constraints.maxWidth,
+                minHeight: constraints.maxHeight,
+              ),
+              child: Center(child: Text("Aucune absence enregistrée", style: Theme.of(context).textTheme.headlineSmall)),
+            ),
+          ),
+        ),
       );
     }
 

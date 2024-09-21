@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../model/absences.dart';
@@ -16,38 +17,57 @@ class AbsenceView extends StatefulWidget {
 
 class _AbsenceViewState extends State<AbsenceView> {
   final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
+  final String token = TokenManager.getInstance().getToken();
+
+  final String cacheFileName = "absence.cache";
+
   late Future<List<Absence>> _absenceFuture;
-  List<Absence>? cachedAbsences;
 
   @override
   void initState() {
     super.initState();
-    _absenceFuture = _loadAbsences(); // Initialize _absenceFuture here
+    _absenceFuture = _loadAbsences(false);
+    _updateCache();
   }
 
-  Future<List<Absence>> _loadAbsences() async {
-    // First, attempt to load data from cache
-    String? cachedData = await readFromCache('absences.cache');
-    if (cachedData != null) {
-      List<dynamic> jsonList = jsonDecode(cachedData);
-      cachedAbsences = jsonList.map((e) => Absence.fromJson(e)).toList();
-      setState(() {}); // Update the UI with cached data
-    }
-
-    // Then, attempt to fetch data from the API
-    String token = TokenManager.getInstance().getToken();
+  void _updateCache() async {
     List<Absence> absences = await apiService.fetchAbsence(token);
 
-    // Update cachedAbsences and UI with the new data
-    setState(() {
-      cachedAbsences = absences;
-    });
-
-    // Save the new data to cache
     String jsonString = jsonEncode(absences.map((e) => e.toJson()).toList());
     await writeToCache('absences.cache', jsonString);
+  }
 
-    return absences; // Return the fetched absences
+  Future<List<Absence>> _retrieveDataFromCache() async {
+    String? cacheValue = await readFromCache(cacheFileName);
+
+    if (cacheValue == null) {
+      throw PathNotFoundException;
+    }
+
+    List<dynamic> absenceJson = json.decode(cacheValue);
+    List<Absence> cachedAbsences = absenceJson.map((json) => Absence.fromJson(json)).toList();
+    return cachedAbsences;
+  }
+
+  Future<List<Absence>> _loadAbsences(bool forceRefresh) {
+    if (!forceRefresh) {
+      return _absenceFuture = _retrieveDataFromCache().
+      catchError((err) {
+        if (err.toString().contains("PathNotFoundException")) {
+          return _loadAbsences(true);
+        }
+        throw err;
+      });
+    }
+    return _absenceFuture = apiService.fetchAbsence(token);
+  }
+
+  Future<void> _onRefresh() {
+    setState(() {
+      _loadAbsences(true);
+    });
+
+    return _absenceFuture;
   }
 
   List<double> _countAbsencesHours(List<Absence> absences) {
@@ -87,66 +107,72 @@ class _AbsenceViewState extends State<AbsenceView> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: cachedAbsences != null
-            ? _buildAbsenceView(cachedAbsences!) // If cache is available
-            : FutureBuilder<List<Absence>>(
+        child: FutureBuilder<List<Absence>>(
           future: _absenceFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const CircularProgressIndicator();
             } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else if (snapshot.hasData) {
-              List<Absence> absences = snapshot.data!;
-              return _buildAbsenceView(absences);
+              return LayoutBuilder(
+                builder: (context, constraints) => RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: constraints.maxWidth,
+                        minHeight: constraints.maxHeight,
+                      ),
+                      child: Center(child: Text('Error: ${snapshot.error}')),
+                    ),
+                  ),
+                ),
+              );
             } else {
-              return const Text('No absences found.');
+              List<Absence> absences = snapshot.data!;
+              List<double> absencesHours = _countAbsencesHours(absences);
+
+              return Column(
+                children: [
+                  Card(
+                    child: ExpansionTile(
+                      title: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            _formatDuration(absencesHours[0]),
+                            style: const TextStyle(color: Colors.red, fontSize: 32),
+                          ),
+                          const Text(" d'absences", style: TextStyle(fontSize: 20)),
+                        ],
+                      ),
+                      children: [
+                        _buildAbsenceRow(
+                          _formatDuration(absencesHours[1]),
+                          " d'absences justifiées",
+                          Colors.green,
+                        ),
+                        _buildAbsenceRow(
+                          _formatDuration(absencesHours[2]),
+                          " d'absences excusées",
+                          Colors.lightGreen,
+                        ),
+                        _buildAbsenceRow(
+                          _formatDuration(absencesHours[3]),
+                          " d'absences non excusées",
+                          Colors.red,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(child: AbsenceList(absences: absences, onRefresh: _onRefresh,)),
+                ],
+              );
             }
           },
         ),
       ),
-    );
-  }
-
-  Widget _buildAbsenceView(List<Absence> absences) {
-    List<double> absencesHours = _countAbsencesHours(absences);
-
-    return Column(
-      children: [
-        Card(
-          child: ExpansionTile(
-            title: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  _formatDuration(absencesHours[0]),
-                  style: const TextStyle(color: Colors.red, fontSize: 32),
-                ),
-                const Text(" d'absences", style: TextStyle(fontSize: 20)),
-              ],
-            ),
-            children: [
-              _buildAbsenceRow(
-                _formatDuration(absencesHours[1]),
-                " d'absences justifiées",
-                Colors.green,
-              ),
-              _buildAbsenceRow(
-                _formatDuration(absencesHours[2]),
-                " d'absences excusées",
-                Colors.lightGreen,
-              ),
-              _buildAbsenceRow(
-                _formatDuration(absencesHours[3]),
-                " d'absences non excusées",
-                Colors.red,
-              ),
-            ],
-          ),
-        ),
-        Expanded(child: AbsenceList(absences: absences)),
-      ],
     );
   }
 
