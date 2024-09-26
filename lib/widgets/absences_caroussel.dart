@@ -1,4 +1,3 @@
-
 import 'package:ent/model/absences.dart';
 import 'package:flutter/material.dart';
 
@@ -7,19 +6,49 @@ class AbsencesCaroussel extends StatelessWidget {
 
   const AbsencesCaroussel({super.key, required this.absences});
 
+  Color defineAbsenceColor(Absence absence) {
+    return absence.reason.toLowerCase().contains("justifiée") ? Colors.green :
+    absence.reason.toLowerCase().contains("non excusée") ? Colors.red :
+    Colors.lightGreen;
+  }
+
   //only keep the 5 most recent unexcused absences to display
   List<Absence> getRecentAbsences() {
     //sort absences by date
     List<Absence> sortedAbsences = List.from(absences);
-    //keep only the unexcused absences
-    sortedAbsences = sortedAbsences.where((absence) => absence.reason == "Absence non excusée").toList();
-    sortedAbsences.sort((a, b) => a.date.compareTo(b.date));
-    //reverse the list to have the most recent absences first
-    sortedAbsences = sortedAbsences.reversed.toList();
-    //keep only the 5 most recent absences
+    // Sort the absences by reason and date to have the most recent unexcused absences first
+    sortedAbsences.sort((a, b) {
+      if (a.reason == 'Absence non excusée' &&
+          b.reason != 'Absence non excusée') {
+        return -1;
+      } else if (a.reason == 'Absence non excusée' &&
+          b.reason == 'Absence non excusée') {
+        return b.date.compareTo(a.date);
+      } else if (a.reason == 'Absence excusée' &&
+          b.reason == 'Absence justifiée') {
+        return -1;
+      } else if (a.reason == 'Absence excusée' &&
+          b.reason == 'Absence non excusée') {
+        return 1;
+      } else if (a.reason == 'Absence excusée' &&
+          b.reason == 'Absence excusée') {
+        return b.date.compareTo(a.date);
+      } else if (a.reason == 'Absence justifiée' &&
+          b.reason != 'Absence justifiée') {
+        return 1;
+      } else if (a.reason == 'Absence justifiée' &&
+          b.reason == 'Absence justifiée') {
+        return b.date.compareTo(a.date);
+      } else {
+        return 0;
+      }
+    });
+
+    // Keep only the 5 most recent absences
     if (sortedAbsences.length > 5) {
       sortedAbsences = sortedAbsences.sublist(0, 5);
     }
+
     return sortedAbsences;
   }
 
@@ -29,7 +58,7 @@ class AbsencesCaroussel extends StatelessWidget {
     if (recentAbsences.isEmpty) {
       return Center(
         child: Text(
-          'Pas d\'absences non excusées',
+          'Pas d\'absences récentes',
           style: Theme.of(context).textTheme.headlineSmall,
         ),
       );
@@ -58,35 +87,49 @@ class AbsencesCaroussel extends StatelessWidget {
                 ),
               ],
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    absences.date,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    absences.course,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
-                ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      absences.duration,
-                      style: const TextStyle(
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Container(
+                  width: 5.0,
+                  decoration: BoxDecoration(
+                    color: defineAbsenceColor(absences),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10.0),
+                      bottomLeft: Radius.circular(10.0),
                     ),
                   ),
-                )
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          // Display the date without the year
+                          absences.date.substring(0, absences.date.lastIndexOf("/")) + " - " + absences.reason,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        Text(
+                          absences.subject,
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                        Center(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                            child: Text(
+                              absences.duration.replaceAll(":", "h"),
+                              style: const TextStyle(
+                                fontSize: 36,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
               ],
             ),
           );
