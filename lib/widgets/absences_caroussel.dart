@@ -93,7 +93,7 @@ class AbsencesCaroussel extends StatelessWidget {
                   width: 5.0,
                   decoration: BoxDecoration(
                     color: defineAbsenceColor(absences),
-                    borderRadius: BorderRadius.only(
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10.0),
                       bottomLeft: Radius.circular(10.0),
                     ),
@@ -107,7 +107,7 @@ class AbsencesCaroussel extends StatelessWidget {
                       children: [
                         Text(
                           // Display the date without the year
-                          absences.date.substring(0, absences.date.lastIndexOf("/")) + " - " + absences.reason,
+                          "${absences.date.substring(0, absences.date.lastIndexOf("/"))} - ${absences.reason}",
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                         Text(
