@@ -47,7 +47,7 @@ class NextEvents extends StatelessWidget {
             ),
             Container(
               constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height / 5, // Adjust the height as needed
+                maxHeight: MediaQuery.of(context).size.height / (3.5), // Adjust the height as needed
               ),
               child: DayView(date: date, events: dayEvents, onEventSelected: (event) {
                 // Handle event selection
