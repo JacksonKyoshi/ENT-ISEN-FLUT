@@ -10,63 +10,7 @@ import '../services/User_service.dart';
 import '../services/token_service.dart';
 import '../services/cache.dart';
 
-void fetchJson(String username, String password, BuildContext context, TextEditingController usernameController, TextEditingController passwordController, bool remindOfMe) async {
-  // Faire la requête
-  const url = 'https://api-ent.isenengineering.fr/v1/token';
-
-  final Map<String, String> data = {
-    'username': username,
-    'password': password,
-  };
-  final jsonData = json.encode(data);
-  final response = await http.post(
-    Uri.parse(url),
-    headers: {'Content-Type': 'application/json'},
-    body: jsonData,
-  );
-
-
-  if (response.statusCode == 200) {
-    TokenManager.getInstance().setToken(response.body);
-    UserManager.getInstance().setUsername(username);
-
-    if (context.mounted) { // Vérifiez si le widget est monté avant de naviguer
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => MyApp()),
-      );
-    }
-  } else {
-    debugPrint('Erreur lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
-
-    usernameController.text = username;
-    passwordController.text = password;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          icon: Icon(Icons.error, color: Colors.red),
-          title: Text("Erreur ${response.statusCode}\n${response.reasonPhrase}"),
-          content: SingleChildScrollView(
-            child: ListBody(
-              children: <Widget>[
-                Text("Le serveur a rencontré une erreur et a renvoyé le message suivant :"),
-                Text(response.body),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-
-
-
 void main() async {
-
   runApp(LoginApp());
 }
 
@@ -94,7 +38,118 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginPageState extends State<LoginScreen> {
 
+  bool _isPasswordHidden = true;
+  bool _remindOfMe = false;
 
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final FocusNode _usernameFocusNode = FocusNode(canRequestFocus: true);
+  final FocusNode _passwordFocusNode = FocusNode(canRequestFocus: true);
+
+
+  void fetchJson(String username, String password, BuildContext context, TextEditingController usernameController, TextEditingController passwordController, bool remindOfMe) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const Center(
+            child: SizedBox(
+                width: 50,
+                height: 50,
+                child: CircularProgressIndicator()
+            )
+        );
+      },
+    );
+
+    // Faire la requête
+    const url = 'https://api-ent.isenengineering.fr/v1/token';
+
+    final Map<String, String> data = {
+      'username': username,
+      'password': password,
+    };
+    final jsonData = json.encode(data);
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonData,
+    );
+
+    if (response.statusCode == 200) {
+      TokenManager.getInstance().setToken(response.body);
+      UserManager.getInstance().setUsername(username);
+
+      if (context.mounted) { // Vérifiez si le widget est monté avant de naviguer
+        _usernameFocusNode.canRequestFocus = false;
+        _passwordFocusNode.canRequestFocus = false;
+
+        Navigator.of(context).pop();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MyApp()),
+        );
+
+        _usernameFocusNode.canRequestFocus = true;
+        _passwordFocusNode.canRequestFocus = true;
+      }
+    } else {
+      debugPrint('Erreur lors de la requête. Code de statut: ${response.statusCode}\n${response.reasonPhrase}');
+
+      usernameController.text = username;
+      passwordController.text = password;
+
+      if (context.mounted) {
+        _usernameFocusNode.canRequestFocus = false;
+        _passwordFocusNode.canRequestFocus = false;
+
+        Navigator.of(context).pop(context);
+        
+        if(response.statusCode == 504) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: Icon(Icons.error, color: Colors.red),
+                title: Text("Erreur :\nL'ENT EST DOWN :("),
+              );
+            },
+          );
+        } else if(response.statusCode == 401) {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: Icon(Icons.error, color: Colors.red),
+                title: Text("Erreur :\nMauvais login/Mot de passe"),
+              );
+            },
+          );
+        } else {
+          showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                icon: Icon(Icons.error, color: Colors.red),
+                title: Text("Erreur ${response.statusCode}\n${response.reasonPhrase}"),
+                content: SingleChildScrollView(
+                  child: ListBody(
+                    children: <Widget>[
+                      Text("Le serveur a rencontré une erreur et a renvoyé le message suivant :"),
+                      Text(response.body),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
+        }
+
+        _usernameFocusNode.canRequestFocus = true;
+        _passwordFocusNode.canRequestFocus = true;
+      }
+    }
+  }
 
   @override
   void initState() {
@@ -112,12 +167,6 @@ class _LoginPageState extends State<LoginScreen> {
       }
     });
   }
-  bool _isPasswordHidden = true;
-  bool _remindOfMe = false;
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -147,6 +196,7 @@ class _LoginPageState extends State<LoginScreen> {
                     TextFormField(
                       controller: _usernameController,
                       autocorrect: false,
+                      focusNode: _usernameFocusNode,
                       decoration: const InputDecoration(
                         prefixIcon: Icon(Icons.person, size: 48),
                         labelText: "Identifiant",
@@ -167,6 +217,7 @@ class _LoginPageState extends State<LoginScreen> {
                       obscureText: _isPasswordHidden,
                       obscuringCharacter: "●",
                       autocorrect: false,
+                      focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         prefixIcon: Icon(Icons.lock, size: 48),
                         suffixIcon: IconButton(
