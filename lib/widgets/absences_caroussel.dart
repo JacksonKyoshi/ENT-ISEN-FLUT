@@ -1,4 +1,4 @@
-import 'package:ent/model/absences.dart';
+import 'package:flut/model/absences.dart';
 import 'package:flutter/material.dart';
 
 class AbsencesCaroussel extends StatelessWidget {
