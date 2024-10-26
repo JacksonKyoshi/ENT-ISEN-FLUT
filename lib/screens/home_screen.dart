@@ -1,6 +1,6 @@
-import 'package:ent/model/absences.dart';
-import 'package:ent/widgets/absences_caroussel.dart';
-import 'package:ent/widgets/next_events.dart';
+import 'package:flut/model/absences.dart';
+import 'package:flut/widgets/absences_caroussel.dart';
+import 'package:flut/widgets/next_events.dart';
 import 'package:flutter/material.dart';
 import '../model/notation.dart';
 import '../services/User_service.dart';

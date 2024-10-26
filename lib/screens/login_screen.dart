@@ -1,4 +1,4 @@
-import 'package:ent/screens/mentions_legales_screen.dart';
+import 'package:flut/screens/mentions_legales_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';

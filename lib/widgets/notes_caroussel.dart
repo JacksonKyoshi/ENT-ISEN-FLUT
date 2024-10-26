@@ -1,5 +1,5 @@
 
-import 'package:ent/model/notation.dart';
+import 'package:flut/model/notation.dart';
 import 'package:flutter/material.dart';
 
 class NotesCaroussel extends StatelessWidget {

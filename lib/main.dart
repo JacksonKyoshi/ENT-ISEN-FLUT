@@ -1,5 +1,5 @@
-import 'package:ent/main_handler.dart';
-import 'package:ent/services/token_service.dart';
+import 'package:flut/main_handler.dart';
+import 'package:flut/services/token_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';

@@ -1,4 +1,4 @@
-import 'package:ent/model/calendar_event_details.dart';
+import 'package:flut/model/calendar_event_details.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
