@@ -1,321 +1,258 @@
+import 'package:ent/model/absences.dart';
+import 'package:ent/widgets/absences_caroussel.dart';
+import 'package:ent/widgets/next_events.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-import 'calendar_screen.dart';
-import '../model/absences.dart';
-import 'absences/absence_screen.dart';
-import '../services/User_service.dart';
-import '../services/calendar_service.dart';
 import '../model/notation.dart';
-import 'notes/note_screen.dart';
+import '../services/User_service.dart';
 import '../services/api_service.dart';
 import '../services/token_service.dart';
-import '../widgets/hamburger_menu.dart';
 import 'dart:async';
-import '../services/ics_parser.dart';
-
-
-
+import '../model/calendar_event.dart';
+import '../widgets/notes_caroussel.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  const HomeScreen({super.key});
 
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final ApiService apiService = ApiService('https://api-ent.isenengineering.fr');
+  final ApiService apiService =
+      ApiService('https://api-ent.isenengineering.fr');
+  final String token = TokenManager.getInstance().getToken();
+
+  DateTime selectedDay = DateTime.now();
+  CalendarEvent? selectedEvent;
+
+  late Future<List<CalendarEvent>> _calendarFuture = Future.value([]);
 
   late Future<List<Notation>> _notationsFuture;
-  Timer? _timer;
 
-  @override
+  late Future<List<Absence>> _absencesFuture = Future.value([]);
+
+  final double horizontalPadding = 16.0; // Define padding variable
+
   @override
   void initState() {
     super.initState();
-    String token = TokenManager.getInstance().getToken();
-    print('répoonse $token');
-    _notationsFuture = apiService.fetchNotations(token);
-    Provider.of<CalendarEventProvider>(context, listen: false)
-        .fetchEvents(UserManager.getInstance().getUsername().toLowerCase())
-        .then((_) => setupCurrentEvent());
-  }
-
-  void setupCurrentEvent() {
-    var calendarEvents =
-        Provider.of<CalendarEventProvider>(context, listen: false).events;
-    if (calendarEvents != null && calendarEvents.isNotEmpty) {
-      CalendarEvent? currentEvent = calendarEvents.firstWhere(
-          (event) =>
-              event.start!.isBefore(DateTime.now()) &&
-              event.end!.isAfter(DateTime.now()),
-          orElse: () => CalendarEvent(
-                summary: 'no event',
-                description: {},
-                start: DateTime.now(),
-                end: DateTime.now(),
-                location: null,
-                url: null,
-                attendees: null,
-                organizer: null,
-              ));
-      if (currentEvent != null) {
-        var duration = currentEvent.end!.difference(DateTime.now());
-        _timer = Timer(
-            duration,
-            () => Provider.of<CalendarEventProvider>(context, listen: false)
-                .fetchEvents(
-                    UserManager.getInstance().getUsername().toLowerCase()));
-      }
+    selectedDay = DateTime.now();
+    debugPrint('selectedDay: $selectedDay');
+    if (selectedDay.weekday == DateTime.sunday) {
+      selectedDay = selectedDay.add(const Duration(days: 1));
     }
+    updateCalendarEvents();
+    _notationsFuture = apiService.fetchNotations(token);
+    _absencesFuture = apiService.fetchAbsence(token);
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel(); // Dispose the timer when the widget is disposed
-    super.dispose();
+  void updateCalendarEvents() {
+    setState(() {
+      _calendarFuture = fetchEventsForWeek(selectedDay);
+    });
   }
 
-  double calculateProgress(CalendarEvent event) {
-    DateTime now = DateTime.now();
-    double totalDuration =
-        event.end!.difference(event.start!).inMinutes.toDouble();
-    double elapsedDuration = now.difference(event.start!).inMinutes.toDouble();
-    return elapsedDuration / totalDuration;
+  Future<List<CalendarEvent>> fetchEventsForWeek(DateTime day,
+      {int maxDays = 30, int currentDayCount = 0}) async {
+    List<CalendarEvent> events = [];
+
+    while (events.length < 2 && currentDayCount < maxDays) {
+      List<CalendarEvent> weekEvents = await apiService.fetchCalendar(
+        token,
+        DateTime(day.year, day.month, day.day, day.hour, day.minute),
+        DateTime(day.year, day.month, day.day, 23, 59)
+            .add(const Duration(days: 7)),
+      );
+
+      events.addAll(weekEvents);
+      currentDayCount += 7;
+      day = day.add(const Duration(days: 7));
+      debugPrint('currentDayCount: $currentDayCount');
+      debugPrint('events.length: ${events.length}');
+    }
+
+    // Ensure the events list is unique
+    events = events.toSet().toList();
+    return events;
+  }
+
+  void onEventSelected(CalendarEvent event) {
+    setState(() {
+      selectedEvent = event;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    var calendarEvents = Provider.of<CalendarEventProvider>(context).events;
-    CalendarEvent? currentEvent;
-    if (calendarEvents != null && calendarEvents.isNotEmpty) {
-      currentEvent = calendarEvents.firstWhere(
-        (event) => (event.start!.isBefore(DateTime.now()) &&
-            event.end!.isAfter(DateTime.now())),
-        orElse: () => CalendarEvent(
-          summary: 'Pas de cours en cours',
-          description: {},
-          start: DateTime.now(),
-          end: DateTime.now(),
-          location: null,
-          url: null,
-          attendees: null,
-          organizer: null,
-        ),
-      );
-    }
     return Scaffold(
-      body: SingleChildScrollView(
-        // Add this
-        child: Center(
-          child: Column(
-            children: [
-              Align(
-                alignment: Alignment.topLeft,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  child: const Text('Dernières notes :',
-                      style: TextStyle(fontSize: 20)),
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const NotesScreen()),
-                  );
-                },
-                child: FutureBuilder<List<Notation>>(
-                  future: _notationsFuture,
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Card(
-                        // Wrap the Container with a Card
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 30,
-                          padding: const EdgeInsets.all(20),
-                          child: Column(
-                            children: [
-                              Text(snapshot.data![0].code),
-                              Text(snapshot.data![0].note.toString(),
-                                  style: const TextStyle(fontSize: 30)),
-                            ],
-                          ),
+      body: FutureBuilder<List<CalendarEvent>>(
+        future: _calendarFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return const Center(child: Text('Erreur de chargement des données'));
+          } else {
+            List<CalendarEvent> events = snapshot.data!;
+            List<CalendarEvent> displayEvents = [];
+
+            // get the first two events that ends after the current time
+            for (var event in events) {
+              if (event.end.isAfter(DateTime.now())) {
+                displayEvents.add(event);
+              }
+              if (displayEvents.length >= 2) {
+                break;
+              }
+            }
+
+            return SingleChildScrollView(
+              child: Column(
+                children: [
+                  //large text
+                  SizedBox(
+                    width: double.infinity,
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(
+                          horizontalPadding, 16, horizontalPadding, 0),
+                      child:
+                          //capitalize the first letter each word in the username
+                          Text(
+                        'Bonjour ${UserManager.getInstance().getUsername().split('.')[0].split(' ').map((String word) => word[0].toUpperCase() + word.substring(1)).join(' ')}',
+                        style: Theme.of(context).textTheme.headlineLarge,
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: horizontalPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Prochains cours :',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          textAlign: TextAlign.left,
                         ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return const CircularProgressIndicator();
-                  },
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(20),
-                child: const Align(
-                  alignment: Alignment.topLeft,
-                  child:
-                      Text('Prochains Cours :', style: TextStyle(fontSize: 20)),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const CalendarScreen()),
-                  );
-                },
-                child: Column(
-                  children: calendarEvents != null
-                      ? calendarEvents
-                          .where((event) => event.end!.isAfter(DateTime.now()))
-                          .take(2)
-                          .map((event) => Card(
-                                child: SizedBox(
-                                  width: MediaQuery.of(context).size.width -
-                                      30, // Set the width of the Container
-                                  child: Stack(
-                                    alignment: Alignment.center,
-                                    children: [
-                                      ListTile(
-                                        leading: Icon(
-                                          event.summary!.contains('PROJET')
-                                              ? Icons.bar_chart
-                                              : event.summary!.contains('TD')
-                                                  ? Icons.calculate
-                                                  : event.summary!
-                                                          .contains('TP')
-                                                      ? Icons.memory
-                                                      : event.summary!
-                                                              .contains('CM')
-                                                          ? Icons.mic
-                                                          : event.summary!
-                                                                  .contains(
-                                                                      'DS')
-                                                              ? Icons.school
-                                                              : event.summary!
-                                                                      .contains(
-                                                                          'EXAMEN')
-                                                                  ? Icons.school
-                                                                  : event.summary!
-                                                                          .contains(
-                                                                              'RATTRAPAGE')
-                                                                      ? Icons
-                                                                          .school
-                                                                      : event.summary!.contains(
-                                                                              'REUNION')
-                                                                          ? Icons
-                                                                              .people
-                                                                          : Icons
-                                                                              .event,
-                                        ),
-                                        title: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              '${DateFormat('HH:mm').format(event.start!)} - ${DateFormat('HH:mm').format(event.end!)}',
-                                              textAlign: TextAlign.left,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleLarge,
-                                            ),
-                                            Text(
-                                              '${event.summary}',
-                                              textAlign: TextAlign.left,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium,
-                                            ),
-                                            //if its the frist tile display the progress bar
-                                            if (event == currentEvent)
-                                              LinearProgressIndicator(
-                                                value: calculateProgress(event),
-                                                backgroundColor:
-                                                    Colors.grey.shade400,
-                                                valueColor:
-                                                    const AlwaysStoppedAnimation<
-                                                        Color>(Colors.red),
-                                                minHeight: 10,
-                                                borderRadius:
-                                                    BorderRadius.circular(10),
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ))
-                          .toList()
-                      : [const CircularProgressIndicator()],
-                ),
-              ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => AbsenceView()),
-                  );
-                },
-                child: FutureBuilder<List<Absence>>(
-                  future: apiService.fetchAbsence(TokenManager.getInstance().getToken()),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      int totalAbsences = snapshot.data!.isEmpty
-                          ? 0
-                          : snapshot.data!
-                          .map((absence) => int.parse(absence.hours))
-                          .reduce((value, element) => value + element);
-                    }
-                    if (snapshot.hasData) {
-                      int totalAbsences = snapshot.data!.length;
-                      return Column(
-                        children: [
-                          Align(
-                            alignment: Alignment.topLeft,
-                            child: Container(
-                              padding: const EdgeInsets.all(20),
-                              child: Text('Total Absences: $totalAbsences H', style: TextStyle(fontSize: 20)),
+                        GestureDetector(
+                          onTap: () {
+                            // TODO: Handle event selection inside NextEvents
+                          },
+                          child: Container(
+                            constraints: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height / (3.5),
+                              minHeight: MediaQuery.of(context).size.height / 8,
+                            ),
+                            child: SingleChildScrollView(
+                              child: NextEvents(events: displayEvents),
                             ),
                           ),
-                          totalAbsences > 0
-                              ? Container(
-                            height: 200, // specify a height
-                            child: ListView.builder(
-                              itemCount: totalAbsences,
-                              itemBuilder: (context, index) {
-                                Absence absence = snapshot.data![index];
-                                return Card(
-                                  child: ListTile(
-                                    title: Text('Date: ${absence.date}'),
-                                    subtitle: Text('Course: ${absence.subject}\nHeures: ${absence.hours}\n${absence.reason}'),
-                                    trailing: const Icon(Icons.arrow_forward),
-                                  ),
-                                );
-                              },
-                            ),
-                          )
-                              : Card(
-                            child: ListTile(
-                              title: Text('Aucune absences'),
-                            ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    indent: horizontalPadding,
+                    endIndent: horizontalPadding,
+                  ),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: horizontalPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Dernières notes :',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          textAlign: TextAlign.left,
+                        ),
+                        Container(
+                          constraints: BoxConstraints(
+                            minHeight: MediaQuery.of(context).size.height / 8,
                           ),
-                        ],
-                      );
-                    } else if (snapshot.hasError) {
-                      return Text('${snapshot.error}');
-                    }
-                    return CircularProgressIndicator();
-                  },
-                ),
+                          child:
+                          FutureBuilder<List<Notation>>(
+                            future: _notationsFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return const Center(
+                                    child:
+                                    Text('Erreur de chargement des données'));
+                              } else if (!snapshot.hasData ||
+                                  snapshot.data!.isEmpty) {
+                                return Center(
+                                    child: Text('Pas de notes disponibles',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall));
+                              } else {
+                                return NotesCaroussel(notes: snapshot.data!);
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                  Divider(
+                    color: Colors.grey,
+                    thickness: 1,
+                    indent: horizontalPadding,
+                    endIndent: horizontalPadding,
+                  ),
+                  Container(
+                    padding:
+                        EdgeInsets.symmetric(horizontal: horizontalPadding),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Dernières absences :',
+                          style: Theme.of(context).textTheme.headlineMedium,
+                          textAlign: TextAlign.left,
+                        ),
+                        Container(
+                          constraints: BoxConstraints(
+                            minHeight: MediaQuery.of(context).size.height / 8,
+                          ),
+                          child:
+                          FutureBuilder<List<Absence>>(
+                            future: _absencesFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              } else if (snapshot.hasError) {
+                                return const Center(
+                                    child:
+                                    Text('Erreur de chargement des données'));
+                              } else if (!snapshot.hasData ||
+                                  snapshot.data!.isEmpty) {
+                                return Center(
+                                    child: Text('Pas d\'absences disponibles',
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineSmall));
+                              } else {
+                                return AbsencesCaroussel(absences: snapshot.data!);
+                              }
+                            },
+                          ),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            );
+          }
+        },
       ),
     );
   }
