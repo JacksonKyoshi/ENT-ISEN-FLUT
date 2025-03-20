@@ -1,2 +1,0 @@
-/home/sigeth/Documents/APP-ISEN/flut/android/app/.cxx/RelWithDebInfo/353f6u2n/x86/CMakeFiles/edit_cache.dir
-/home/sigeth/Documents/APP-ISEN/flut/android/app/.cxx/RelWithDebInfo/353f6u2n/x86/CMakeFiles/rebuild_cache.dir
