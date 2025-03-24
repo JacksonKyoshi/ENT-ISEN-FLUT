@@ -13,19 +13,19 @@ Please replace the COMPONENT section in the title by the component it is about (
 Describe what is the bug shortly
 -->
 
+
 ## Expected Behavior
 <!--
-Describe how you expected the API to work.
-It will be useful if you can provide an example in JSON format
+Describe how you expected the application to work.
 -->
 
 
 ## Actual Behavior
 <!--
 Describe how the API really works
-You can provide an example to help us
-BEWARE: DO NOT COPY/PASTE OR SCREENSHOT
-THIS API CAN SEND SENSITIVE DATA AND THIS ISSUE IS PUBLIC
+You can provide a screenshot to help us
+BEWARE: HIDE ANY SENSITIVE DATA FROM YOUR SCREENSHOT
+THIS APPLICATION CAN SEND SENSITIVE DATA AND THIS ISSUE IS PUBLIC
 -->
 
 
